@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: #f4f6f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .dashboard {
+            padding: 40px;
+        }
+
+        /* HEADER */
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 32px;
+        }
+
+        /* GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* CARDS */
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* PROFILE */
+        .profile {
+            text-align: center;
+        }
+
+        .profile img {
+            width: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        /* BUTTONS */
+        .btn {
+            margin-top: 10px;
+            padding: 10px;
+            background: black;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        /* STATS */
+        .stat {
+            font-size: 28px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo">
+        <a href="index.html">Shopverse</a>
+    </div>
+
+    <ul class="nav-links">
+        <li><a href="index.html">Store</a></li>
+        <li><a href="shop.html">Products</a></li>
+        <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+
+        <li id="admin-link"></li>
+        <li id="auth-link"><a href="login.html">Login</a></li>
+    </ul>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <h1>Welcome, <span id="user-name"></span> 👋</h1>
+        <p>Manage your account & shopping easily</p>
+    </div>
+
+    <!-- GRID -->
+    <div class="dashboard-grid">
+
+        <!-- PROFILE -->
+        <div class="card profile">
+            <img id="user-avatar">
+            <h3 id="user-name-2"></h3>
+            <p id="user-email"></p>
+            <p><b>Role:</b> <span id="user-role"></span></p>
+        </div>
+
+        <!-- CART -->
+        <div class="card">
+            <h3>🛒 Cart Items</h3>
+            <div class="stat" id="cart-count-box">0</div>
+            <a href="cart.html"><div class="btn">View Cart</div></a>
+        </div>
+
+        <div class="card" onclick="goToOrders()" style="cursor:pointer;">
+            <h3>📦 Orders</h3>
+            <div class="stat" id="order-count">0</div>
+            <p id="order-text">Loading...</p>
+        </div>
+
+        <!-- SHOP -->
+        <div class="card">
+            <h3>🛍️ Explore Products</h3>
+            <p>Discover new items</p>
+            <a href="shop.html"><div class="btn">Shop Now</div></a>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+
+<script>
+    loadCartCountBox();
+    loadOrdersSummary();
+</script>
+
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if(user){
+        document.getElementById("user-name").innerText = user.name;
+        document.getElementById("user-name-2").innerText = user.name;
+        document.getElementById("user-email").innerText = user.email;
+        document.getElementById("user-role").innerText = user.role;
+    }
+
+
+
+</script>
+<script>
+    function checkUserAccess(){
+
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if(!user){
+            alert("Please login!");
+            window.location.href = "login.html";
+        }
+    }
+
+    checkUserAccess();
+</script>
+
+</body>
+</html><style>
+    body {
+        background: linear-gradient(135deg, #eef2f3, #dfe9f3);
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+    }
+
+    /* HEADER */
+    .dashboard-header {
+        text-align: center;
+        padding: 30px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+    }
+
+    .dashboard-header p {
+        color: gray;
+    }
+
+
+
+    .dashboard {
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+    }
+    .card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        min-height: 180px;
+    }
+    /* HOVER EFFECT */
+    .card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    /* PROFILE */
+    .profile img {
+        width: 90px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
+
+    /* STAT */
+    .stat {
+        font-size: 32px;
+        font-weight: bold;
+        margin: 10px 0;
+        color: #111;
+    }
+
+    /* BUTTON */
+    .btn {
+        padding: 12px 20px;
+        background: linear-gradient(45deg, #000, #333);
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-block;
+    }
+
+    .btn:hover {
+        background: linear-gradient(45deg, #333, #000);
+        transform: scale(1.05);
+    }
+
+    /* ICON STYLE */
+    .card h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+
+</style>
