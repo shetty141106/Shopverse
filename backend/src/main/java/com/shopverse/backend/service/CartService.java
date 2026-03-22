@@ -14,40 +14,38 @@ public class CartService {
 
     private final ProductRepository productRepository;
     private final CartRepository repo;
-    public CartService(CartRepository repo, ProductRepository productRepository) {
+    private final CartRepository cartRepository;
+
+    public CartService(CartRepository repo, ProductRepository productRepository, CartRepository cartRepository) {
         this.repo = repo;
         this.productRepository = productRepository;
+        this.cartRepository = cartRepository;
     }
     public CartItem addToCart(CartItem item) {
 
-        List<CartItem> existingItems = repo.findCartByUserId(item.getUserId());
+        Product product = productRepository.findById(item.getProduct().getId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        for (CartItem ci : existingItems) {
-            if (ci.getProductId().equals(item.getProductId())) {
-                ci.setQuantity(ci.getQuantity() + item.getQuantity());
-                return repo.save(ci);
-            }
-        }
+        item.setProduct(product);
 
-        return repo.save(item);
+        return cartRepository.save(item);
     }
     public List<CartResponse> getUserCart(Long userId) {
 
-        List<CartItem> items = repo.findCartByUserId(userId);
+        List<CartItem> items = repo.findByUserId(userId);
 
         List<CartResponse> response = new ArrayList<>();
 
         for (CartItem item : items) {
 
             Product product = productRepository
-                    .findById(item.getProductId())
+                    .findById(item.getProduct().getId())
                     .orElse(null);
 
             if (product != null) {
 
                 CartResponse cr = new CartResponse();
                 cr.setId(item.getId());
-                cr.setProductId(product.getId());
                 cr.setName(product.getName());
                 cr.setImage(product.getImage());
                 cr.setPrice(product.getPrice());

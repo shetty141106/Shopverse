@@ -340,7 +340,113 @@ async function addProduct() {
         console.error("Add product error:", error);
     }
 }
+async function updateQuantity(id, newQty, btn) {
+    btn.disabled = true;
 
+    const originalText = btn.innerText;
+    btn.innerText = "...";
+
+    const qtyElement = document.querySelector(`[data-id="${id}"] .qty`);  // ✅ FIX
+    let currentQty = parseInt(qtyElement.innerText);
+
+    if (newQty < 1) {
+        btn.disabled = false;
+        btn.innerText = originalText;
+        return;
+    }
+
+    qtyElement.innerText = newQty;
+    animateQty(qtyElement);
+
+    try {
+        await authFetch(`http://localhost:8080/api/cart/update/${id}`, {  // ✅ FIX
+            method: "PUT",
+            body: JSON.stringify({ quantity: newQty })
+        });
+
+        loadCartFromBackend();
+
+    } catch (err) {
+        console.error(err);
+        qtyElement.innerText = currentQty;
+    }
+
+    btn.disabled = false;
+    btn.innerText = originalText;
+}
+async function removeItem(id, itemDiv){
+    try{
+        await authFetch(`http://localhost:8080/api/cart/${id}`, {
+            method: "DELETE"
+        });
+
+        itemDiv.style.opacity = "0";
+        setTimeout(() => itemDiv.remove(), 300);
+
+        loadCartFromBackend();
+
+    } catch(err){
+        console.error(err);
+    }
+}
+
+function renderCartItems(items) {
+    const container = document.querySelector(".cart-items");
+    container.innerHTML = "";
+
+    if (items.length === 0) {
+        document.querySelector(".empty-cart").style.display = "block";
+        return;
+    }
+
+    document.querySelector(".empty-cart").style.display = "none";
+
+    items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "cart-item fade-in";
+        div.dataset.id = item.id;
+
+        div.innerHTML = `
+            <img src="${item.image}" class="cart-img"/>
+
+            <div class="cart-info">
+                <h3>${item.name}</h3>
+                <p>₹${item.price}</p>
+
+                <div class="qty-control">
+                    <button class="qty-btn minus">−</button>
+                    <span class="qty">${item.quantity}</span>
+                    <button class="qty-btn plus">+</button>
+                </div>
+            </div>
+
+            <button class="remove-btn">🗑</button>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+function animateQty(el) {
+    el.style.transform = "scale(1.3)";
+    el.style.transition = "0.2s";
+
+    setTimeout(() => {
+        el.style.transform = "scale(1)";
+    }, 200);
+}
+
+
+
+function showToast(msg) {
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = msg;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.remove(), 3000);
+}
 // ================= CART =================
 async function addToCart(productId){
     const user = JSON.parse(localStorage.getItem("user"));
@@ -350,8 +456,7 @@ async function addToCart(productId){
         method: "POST",
 
         body: JSON.stringify({
-            userId: user.id,
-            productId,
+            productId: productId,
             quantity: 1
         })
     });
@@ -394,26 +499,113 @@ async function loadCartFromBackend(){
     const items = await res.json();
 
     const container = document.querySelector(".cart-items");
-    if(!container) return;
+    const subtotalEl = document.getElementById("subtotal");
+    const totalEl = document.getElementById("total");
 
+    if(!container) return;
 
     container.innerHTML = "";
 
     let total = 0;
 
+    if(items.length === 0){
+        document.querySelector(".empty-cart").style.display = "block";
+
+        subtotalEl.innerText = "0";
+        totalEl.innerText = "0";
+
+        return;
+    }
+
+    document.querySelector(".empty-cart").style.display = "none";
+
     items.forEach(item => {
+
+        total += item.price * item.quantity;
+
+        const div = document.createElement("div");
+        div.className = "cart-item fade-in";
+        div.dataset.id = item.id;
+
+        div.innerHTML = `
+    <img src="http://localhost:8080/uploads/${item.image}" class="cart-img"/>
+
+    <div class="cart-info">
+        <h3>${item.name}</h3>
+        <p>₹${item.price}</p>
+
+        <div class="qty-control">
+            <button class="qty-btn minus">−</button>
+            <span class="qty">${item.quantity}</span>
+            <button class="qty-btn plus">+</button>
+        </div>
+    </div>
+
+    <button class="remove-btn">🗑</button>
+`;
+
+
+        container.appendChild(div);
+    });
+
+    subtotalEl.innerText = total;
+    totalEl.innerText = total;
+}
+
+document.addEventListener("click", async (e) => {
+
+    const itemDiv = e.target.closest(".cart-item");
+    if(!itemDiv) return;
+
+    const id = itemDiv.dataset.id;
+    console.log("CLICKED ID:", id);
+    const qtyEl = itemDiv.querySelector(".qty");
+    let qty = parseInt(qtyEl.innerText);
+
+    // ➕ INCREASE
+    if(e.target.classList.contains("plus")){
+        qty++;
+        await updateQuantity(id, qty, e.target);
+    }
+
+    // ➖ DECREASE
+    if(e.target.classList.contains("minus")){
+        if(qty > 1){
+            qty--;
+            await updateQuantity(id, qty, e.target);
+        }
+    }
+
+    // 🗑 REMOVE
+    if(e.target.classList.contains("remove-btn")){
+        await removeItem(id, itemDiv);
+    }
+});
+
+async function loadCheckout(){
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    if(!user) return;
+
+    const res = await authFetch(`http://localhost:8080/api/cart/user/${user.id}`);
+    const items = await res.json();
+
+    const container = document.getElementById("checkout-items");
+    const totalEl = document.getElementById("checkout-total");
+
+    let total = 0;
+    container.innerHTML = "";
+
+    items.forEach(item => {
+
         total += item.price * item.quantity;
 
         container.innerHTML += `
-        <div>
-            <h3>${item.name}</h3>
-            <p>₹${item.price}</p>
-            <p>Qty: ${item.quantity}</p>
-        </div>`;
+            <p>${item.name} × ${item.quantity} = ₹${item.price * item.quantity}</p>
+        `;
     });
 
-    const totalBox = document.querySelector(".cart-summary p");
-    if(totalBox) totalBox.innerText = "Total: ₹" + total;
+    totalEl.innerText = total;
 }
 
 async function updateCartCount(){
@@ -538,6 +730,36 @@ async function loadOrders(){
     }
 }
 
+async function placeOrder(event){
+    event.preventDefault(); // ✅ STOP PAGE RELOAD
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    if(!user){
+        alert("Login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+
+        const res = await authFetch(`http://localhost:8080/api/orders/place?userId=${user.id}`, {
+            method: "POST"
+        });
+
+        if(!res.ok){
+            alert("Order failed");
+            return;
+        }
+
+        alert("Order placed successfully 🎉");
+
+        window.location.href = "user.html";
+
+    } catch(err){
+        console.error(err);
+        alert("Something went wrong");
+    }
+}
 
 async function registerUser(event){
     event.preventDefault();
@@ -753,3 +975,45 @@ window.onload = function(){
     }
 
 };
+document.addEventListener("click", (e) => {
+
+    if(e.target.classList.contains("checkout-btn")){
+
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if(!user){
+            alert("Login first");
+            window.location.href = "login.html";
+            return;
+        }
+
+        // 👉 Go to checkout page
+        window.location.href = "checkout.html";
+    }
+});
+
+document.addEventListener("click", async (e) => {
+
+    if(e.target.id === "place-order"){
+
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        await authFetch("http://localhost:8080/api/orders/place", {
+            method: "POST"
+        });
+
+        alert("Order placed successfully!");
+
+        window.location.href = "orders.html";
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const form = document.querySelector(".checkout-form");
+
+    if(form){
+        form.addEventListener("submit", placeOrder);
+    }
+
+});

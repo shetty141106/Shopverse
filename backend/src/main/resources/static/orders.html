@@ -30,6 +30,30 @@
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
+        .status {
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .placed { background: #e0e0e0; }
+        .shipped { background: #007bff; color: white; }
+        .delivered { background: #28a745; color: white; }
+
+        .progress {
+            height: 6px;
+            background: #eee;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            width: 60%;
+            transition: 0.5s ease;
+        }
+
     </style>
 </head>
 
@@ -39,6 +63,19 @@
 
 <div class="orders-container">
     <div id="order-list"></div>
+</div>
+
+<div class="order-card">
+    <div class="order-header">
+        <h3>Order #12345</h3>
+        <span class="status shipped">SHIPPED</span>
+    </div>
+
+    <p>Total: ₹1200</p>
+
+    <div class="progress">
+        <div class="progress-bar shipped"></div>
+    </div>
 </div>
 
 <script src="script.js"></script>

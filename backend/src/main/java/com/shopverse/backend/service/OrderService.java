@@ -29,7 +29,7 @@ public class OrderService {
     // ✅ PLACE ORDER
     public Order placeOrder(Long userId) {
 
-        List<CartItem> cartItems = cartRepository.findCartByUserId(userId);
+        List<CartItem> cartItems = cartRepository.findByUserId(userId);
 
         if (cartItems.isEmpty()) {
             throw new RuntimeException("Cart is empty");
@@ -50,11 +50,11 @@ public class OrderService {
 
         for (CartItem cart : cartItems) {
 
-            if (cart.getProductId() == null || cart.getQuantity() <= 0) {
+            if (cart.getProduct().getId() == null || cart.getQuantity() <= 0) {
                 continue; // skip invalid data
             }
 
-            Product product = productRepository.findById(cart.getProductId())
+            Product product = productRepository.findById(cart.getProduct().getId())
                     .orElse(null);
 
             if (product == null) {
