@@ -12,8 +12,12 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+
                 registry.addMapping("/**")
-                        .allowedOrigins("https://shopverseedge.netlify.app")
+                        .allowedOrigins(
+                                "https://shopverseultra.onrender.com",
+                                "https://shopverseedge.netlify.app"
+                        )
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);
