@@ -21,26 +21,29 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {})   // 🔥 ADD THIS LINE
+
                 .authorizeHttpRequests(auth -> auth
 
-                        // ✅ FRONTEND FILES (VERY IMPORTANT)
+                        // frontend
                         .requestMatchers(
-                                "/", "/*.html","/images/**",
+                                "/", "/*.html", "/images/**",
                                 "/style.css", "/script.js",
                                 "/uploads/**", "/favicon.ico"
                         ).permitAll()
 
-                                .requestMatchers("/api/auth/**").permitAll()
+                        // auth
+                        .requestMatchers("/api/auth/**").permitAll()
 
-// ✅ PUBLIC (GET only)
-                                .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        // public
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 
-// 🔐 ADMIN (POST, PUT, DELETE)
-                                .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+                        // admin
+                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
 
-                                .anyRequest().authenticated()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

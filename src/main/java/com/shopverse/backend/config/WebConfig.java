@@ -12,7 +12,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://comfy-rugelach-5333c5.netlify.app") // 🔥 your frontend URL
+                        .allowedOrigins("https://frolicking-sunflower-d9481f.netlify.app/") // 🔥 your frontend URL
                         .allowedMethods("*")
                         .allowedHeaders("*");
             }
