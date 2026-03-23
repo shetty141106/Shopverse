@@ -32,9 +32,7 @@ public class JwtUtil {
     }
 
     // 🔍 Extract Role
-    public String extractRole(String token) {
-        return (String) getClaims(token).get("role");
-    }
+    public String extractRole(String token) {return extractAllClaims(token).get("role", String.class);}
 
     // 🔍 Validate Token
     public boolean validateToken(String token) {
