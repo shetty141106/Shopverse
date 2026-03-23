@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="admin-container">
+
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <h2 class="logo">Shopverse</h2>
+
+        <ul>
+            <li><a href="admin.html">Dashboard</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="#orders">Orders</a></li>
+            <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+
+        <!-- Topbar -->
+        <div class="admin-topbar">
+            <h2>Dashboard</h2>
+
+            <div class="admin-profile">
+                <span id="admin-name">Admin</span>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="admin-stats">
+            <div class="stat-card">
+                <h2 id="total-products">0</h2>
+                <p>Total Products</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="total-orders">0</h2>
+                <p>Total Orders</p>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <h2>Products Overview</h2>
+        <div class="chart-container">
+            <canvas id="productChart"></canvas>
+        </div>
+
+        <!-- Add Product -->
+        <h2>Add Product</h2>
+
+        <form class="admin-form" onsubmit="event.preventDefault(); addProduct();">
+
+            <input type="text" id="product-name" placeholder="Product Name" required>
+
+            <input type="number" id="product-price" placeholder="Price" required>
+
+            <input type="file" id="product-image" required>
+
+            <button type="submit">Add Product</button>
+
+        </form>
+
+        <!-- Product Table -->
+        <h2>Manage Products</h2>
+
+        <table class="product-table">
+            <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+
+            <tbody id="admin-products-body"></tbody>
+        </table>
+
+        <!-- Orders -->
+        <div id="order-section">
+
+            <h2 id="orders">Orders</h2>
+            <table id="ordersTable" class="product-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Update</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+        </div>
+
+</div>
+</div>
+<script src="script.js"></script>
+
+</body>
+</html>

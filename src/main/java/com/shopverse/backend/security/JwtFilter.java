@@ -28,6 +28,11 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain chain)
             throws ServletException, IOException {
 
+        if (req.getMethod().equals("OPTIONS")) {
+            chain.doFilter(req, res);
+            return;
+        }
+
         String path = req.getRequestURI();
 
         // ✅ Allow frontend/static files
