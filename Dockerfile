@@ -1,20 +1,19 @@
-# Use official Java 17 image
 FROM eclipse-temurin:17-jdk
 
-# Set working directory
 WORKDIR /app
 
-# Copy project files
 COPY . .
 
-# Give permission to mvnw
 RUN chmod +x mvnw
 
-# Build the project
-RUN ./mvnw clean install -DskipTests
+# Build project
+RUN ./mvnw clean package -DskipTests
 
-# Expose port
+# 🔥 DEBUG: print target folder
+RUN echo "==== TARGET CONTENT ===="
+RUN ls -l target
+
 EXPOSE 8080
 
-# Run the app
-CMD ["java", "-jar", "target/*.jar"]
+# 🔥 Safe run (no wildcard issue)
+CMD ["sh", "-c", "java -jar $(find target -name '*.jar' | head -n 1)"]
