@@ -27,11 +27,14 @@ public class SecurityConfig {
 
                         // frontend
                         .requestMatchers(
-                                "/", "/*.html", "/images/**",
-                                "/style.css", "/script.js",
-                                "/uploads/**", "/favicon.ico"
+                                "/",
+                                "/**.html",
+                                "/**.css",
+                                "/**.js",
+                                "/images/**",
+                                "/uploads/**",
+                                "/favicon.ico"
                         ).permitAll()
-
                         // auth
                         .requestMatchers("/api/auth/**").permitAll()
 
