@@ -1,3 +1,9 @@
+
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+
 @Override
 protected void doFilterInternal(HttpServletRequest req,
                                 HttpServletResponse res,
