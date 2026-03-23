@@ -30,14 +30,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = req.getRequestURI();
 
-        // ✅ Allow auth endpoints (VERY IMPORTANT)
+        // ✅ allow auth endpoints
         if (path.startsWith("/api/auth")) {
             chain.doFilter(req, res);
             return;
         }
 
-        // ✅ Allow OPTIONS (CORS)
-        if (req.getMethod().equals("OPTIONS")) {
+        // ✅ allow OPTIONS (CORS)
+        if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
             chain.doFilter(req, res);
             return;
         }
@@ -51,15 +51,16 @@ public class JwtFilter extends OncePerRequestFilter {
             if (jwtUtil.validateToken(token)) {
 
                 String username = jwtUtil.extractUsername(token);
+                String role = jwtUtil.extractRole(token);   // 🔥 IMPORTANT
+
+                List<SimpleGrantedAuthority> authorities =
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
                                 username,
                                 null,
-                                String role = jwtUtil.extractRole(token);
-
-                List<SimpleGrantedAuthority> authorities =
-                        List.of(new SimpleGrantedAuthority("ROLE_" + role));
+                                authorities
                         );
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
