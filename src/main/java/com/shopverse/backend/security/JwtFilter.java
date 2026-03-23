@@ -28,28 +28,22 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain chain)
             throws ServletException, IOException {
 
-        if (req.getMethod().equals("OPTIONS")) {
-            chain.doFilter(req, res);
-            return;
-        }
-
         String path = req.getRequestURI();
 
-        // ✅ Allow frontend/static files
-        if (!path.startsWith("/api")) {
+        // ✅ Allow auth endpoints (VERY IMPORTANT)
+        if (path.startsWith("/api/auth")) {
             chain.doFilter(req, res);
             return;
         }
 
-        // ✅ Allow login & register
-        if (path.startsWith("/api/auth")) {
+        // ✅ Allow OPTIONS (CORS)
+        if (req.getMethod().equals("OPTIONS")) {
             chain.doFilter(req, res);
             return;
         }
 
         String header = req.getHeader("Authorization");
 
-        // ✅ If token exists, validate it
         if (header != null && header.startsWith("Bearer ")) {
 
             String token = header.substring(7);
@@ -58,17 +52,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 String username = jwtUtil.extractUsername(token);
 
-                List<SimpleGrantedAuthority> authorities =
-                        List.of(new SimpleGrantedAuthority("ROLE_USER"));
-
                 UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                        new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                        );
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
 
-        // ✅ Continue request
         chain.doFilter(req, res);
     }
 }
