@@ -1,4 +1,5 @@
-const API_URL = "https://com-shopverse.onrender.com/api/products";
+const API_URL = "https://shopverseultra.onrender.com/api";
+const path = window.location.pathname;
 
 // ================= NAVBAR =================
 function updateNavbar() {
@@ -44,10 +45,10 @@ function checkAdminAccess(){
 }
 async function loadStats(){
     try{
-        const productsRes = await authFetch("https://com-shopverse.onrender.com/api/products");
+        const productsRes = await authFetch("https://shopverseultra.onrender.com/api/products");
         const products = await productsRes.json();
 
-        const ordersRes = await authFetch("https://com-shopverse.onrender.com/api/admin/orders");
+        const ordersRes = await authFetch("https://shopverseultra.onrender.com/api/admin/orders");
         const orders = await ordersRes.json();
 
         document.getElementById("total-products").innerText = products.length;
@@ -105,7 +106,7 @@ async function loadProducts(keyword = "") {
     products.forEach(p => {
         container.innerHTML += `
     <div class="card" onclick="viewProduct(${p.id})">
-        <img src="https://com-shopverse.onrender.com/uploads/${p.image}" alt="product">
+        <img src="https://shopverseultra.onrender.com/uploads/${p.image}" alt="product">
         <h3>${p.name}</h3>
         <p>₹${p.price}</p>
         <button onclick="addToCart(${p.id}); event.stopPropagation();">Add to Cart</button>
@@ -121,7 +122,7 @@ async function loadProductDetails() {
     if (!id) return;
 
     try {
-        const res = await fetch(`https://com-shopverse.onrender.com/api/products/${id}`);
+        const res = await fetch(`https://shopverseultra.onrender.com/api/products/${id}`);
         if (!res.ok) {
             console.error("API failed:", res.status);
             return;
@@ -134,7 +135,7 @@ async function loadProductDetails() {
         document.getElementById("product-desc").innerText = product.description || "No description";
 
         document.getElementById("product-image").src =
-            `https://com-shopverse.onrender.com/uploads/${product.image}`;
+            `https://shopverseultra.onrender.com/uploads/${product.image}`;
 
         document.getElementById("add-to-cart-btn").onclick = function() {
             addToCart(product.id);
@@ -181,7 +182,7 @@ async function loadAdminProducts(){
     products.forEach(p => {
         table.innerHTML += `
         <tr>
-            <td><img src="https://com-shopverse.onrender.com/uploads/${p.image}" width="50" alt="product"></td>
+            <td><img src="https://shopverseultra.onrender.com/uploads/${p.image}" width="50" alt="product"></td>
             <td>${p.name}</td>
             <td>₹${p.price}</td>
             <td><button onclick="editProduct(${p.id}, '${p.name}', ${p.price})">Edit</button></td>
@@ -193,7 +194,7 @@ async function loadAdminProducts(){
 
 async function loadAdminOrders(){
 
-    const res = await authFetch("https://com-shopverse.onrender.com/api/admin/orders");
+    const res = await authFetch("https://shopverseultra.onrender.com/api/admin/orders");
     if (!res.ok) {
         console.error("Orders API failed:", res.status);
         return;
@@ -230,7 +231,7 @@ async function updateStatus(orderId){
 
     const status = document.getElementById(`status-${orderId}`).value;
 
-    const res = await authFetch(`https://com-shopverse.onrender.com/api/admin/orders/${orderId}/status`,
+    const res = await authFetch(`https://shopverseultra.onrender.com/api/admin/orders/${orderId}/status`,
         {
             method: "PUT",
             body: JSON.stringify({ status })
@@ -312,7 +313,7 @@ async function addProduct() {
 
         const token = localStorage.getItem("token");
 
-        const res = await fetch("https://com-shopverse.onrender.com/api/products", {
+        const res = await fetch("https://shopverseultra.onrender.com/api/products", {
             method: "POST",
             headers: {
                 "Authorization": "Bearer " + token
@@ -358,7 +359,7 @@ async function updateQuantity(id, newQty, btn) {
     animateQty(qtyElement);
 
     try {
-        await authFetch(`https://com-shopverse.onrender.com/api/cart/update/${id}`, {  // ✅ FIX
+        await authFetch(`https://shopverseultra.onrender.com/api/cart/update/${id}`, {  // ✅ FIX
             method: "PUT",
             body: JSON.stringify({ quantity: newQty })
         });
@@ -375,7 +376,7 @@ async function updateQuantity(id, newQty, btn) {
 }
 async function removeItem(id, itemDiv){
     try{
-        await authFetch(`https://com-shopverse.onrender.com/api/cart/${id}`, {
+        await authFetch(`https://shopverseultra.onrender.com/api/cart/${id}`, {
             method: "DELETE"
         });
 
@@ -451,7 +452,7 @@ async function addToCart(productId){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return alert("Login first");
 
-    await authFetch("https://com-shopverse.onrender.com/api/cart/add", {
+    await authFetch("https://shopverseultra.onrender.com/api/cart/add", {
         method: "POST",
 
         body: JSON.stringify({
@@ -473,7 +474,7 @@ async function placeOrder(event){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return alert("Login first");
 
-    const res = await authFetch(`https://com-shopverse.onrender.com/api/orders/place?userId=${user.id}`,
+    const res = await authFetch(`https://shopverseultra.onrender.com/api/orders/place?userId=${user.id}`,
         { method: "POST" }
     );
 
@@ -489,7 +490,7 @@ async function loadCartFromBackend(){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return;
 
-    const res = await authFetch(`https://com-shopverse.onrender.com/api/cart/user/${user.id}`);
+    const res = await authFetch(`https://shopverseultra.onrender.com/api/cart/user/${user.id}`);
     if (!res.ok) {
         console.error("Cart API failed:", res.status);
         return;
@@ -527,7 +528,7 @@ async function loadCartFromBackend(){
         div.dataset.id = item.id;
 
         div.innerHTML = `
-    <img src="https://com-shopverse.onrender.com/uploads/${item.image}" class="cart-img"/>
+    <img src="https://shopverseultra.onrender.com/uploads/${item.image}" class="cart-img"/>
 
     <div class="cart-info">
         <h3>${item.name}</h3>
@@ -586,7 +587,7 @@ async function loadCheckout(){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return;
 
-    const res = await authFetch(`https://com-shopverse.onrender.com/api/cart/user/${user.id}`);
+    const res = await authFetch(`https://shopverseultra.onrender.com/api/cart/user/${user.id}`);
     const items = await res.json();
 
     const container = document.getElementById("checkout-items");
@@ -611,7 +612,7 @@ async function updateCartCount(){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return;
 
-    const res = await authFetch(`https://com-shopverse.onrender.com/api/cart/user/${user.id}`);
+    const res = await authFetch(`https://shopverseultra.onrender.com/api/cart/user/${user.id}`);
     if (!res.ok) {
         console.error("Cart count failed:", res.status);
         return;
@@ -630,7 +631,7 @@ async function loadCartCountBox(){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return;
 
-    const res = await authFetch(`https://com-shopverse.onrender.com/api/cart/user/${user.id}`);
+    const res = await authFetch(`https://shopverseultra.onrender.com/api/cart/user/${user.id}`);
     const items = await res.json();
 
     let count = 0;
@@ -648,10 +649,10 @@ async function loadOrders(){
     let url = "";
 
     if(path.includes("admin.html")){
-        url = "https://com-shopverse.onrender.com/api/admin/orders";
+        url = "https://shopverseultra.onrender.com/api/admin/orders";
     } else {
         const user = JSON.parse(localStorage.getItem("user"));
-        url = `https://com-shopverse.onrender.com/api/orders/${encodeURIComponent(user.email)}`;
+        url = `https://shopverseultra.onrender.com/api/orders/${encodeURIComponent(user.email)}`;
     }
 
     const res = await authFetch(url);
@@ -741,7 +742,7 @@ async function placeOrder(event){
 
     try {
 
-        const res = await authFetch(`https://com-shopverse.onrender.com/api/orders/place?userId=${user.id}`, {
+        const res = await authFetch(`https://shopverseultra.onrender.com/api/orders/place?userId=${user.id}`, {
             method: "POST"
         });
 
@@ -768,7 +769,7 @@ async function registerUser(event){
     const password = document.getElementById("reg-password").value;
     const role = document.getElementById("reg-role").value;
 
-    const res = await fetch("https://com-shopverse.onrender.com/api/auth/register", {
+    const res = await fetch("https://shopverseultra.onrender.com/api/auth/register", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ name, email, password, role })
@@ -792,7 +793,7 @@ function loginUser(event) {
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
 
-    fetch("https://com-shopverse.onrender.com/api/auth/login", {
+    fetch("https://shopverseultra.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -834,7 +835,7 @@ async function loadOrdersSummary(){
 
     try {
         const res = await authFetch(
-            `https://com-shopverse.onrender.com/api/orders/${encodeURIComponent(user.email)}`
+            `https://shopverseultra.onrender.com/api/orders/${encodeURIComponent(user.email)}`
         );
 
         if(!res.ok){
@@ -1002,7 +1003,7 @@ document.addEventListener("click", async (e) => {
 
         const user = JSON.parse(localStorage.getItem("user"));
 
-        await authFetch("https://com-shopverse.onrender.com/api/orders/place", {
+        await authFetch("https://shopverseultra.onrender.com/api/orders/place", {
             method: "POST"
         });
 
