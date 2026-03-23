@@ -1,15 +1,16 @@
-# Build stage
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# Run stage
 FROM eclipse-temurin:21-jdk
 WORKDIR /app
+
 COPY --from=build /app/target/*.jar app.jar
 
-# ✅ IMPORTANT: expose dynamic port
-EXPOSE 10000
+# 🔥 IMPORTANT: use PORT env variable
+ENV PORT=8080
 
-ENTRYPOINT ["java","-jar","app.jar"]
+EXPOSE 8080
+
+ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=$PORT"]
