@@ -40,9 +40,41 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
+
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                );
+
+                        // ✅ allow preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // ✅ public frontend
+                        .requestMatchers(
+                                "/",
+                                "/**.html",
+                                "/**.css",
+                                "/**.js",
+                                "/images/**",
+                                "/uploads/**"
+                        ).permitAll()
+
+                        // ✅ auth APIs
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // ✅ public product APIs
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+
+                        // 🔒 cart MUST be authenticated
+                        .requestMatchers("/api/cart/**").authenticated()
+
+                        // 🔒 admin APIs
+                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+
+                        .anyRequest().authenticated()
+                )
+
+                // 🔥 VERY IMPORTANT
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
