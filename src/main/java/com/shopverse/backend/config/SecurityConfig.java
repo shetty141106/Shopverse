@@ -40,37 +40,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
-
                 .authorizeHttpRequests(auth -> auth
-
-                        // 🔥 VERY IMPORTANT (ADD THIS)
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // frontend
-                        .requestMatchers(
-                                "/",
-                                "/**.html",
-                                "/**.css",
-                                "/**.js",
-                                "/images/**",
-                                "/uploads/**",
-                                "/favicon.ico"
-                        ).permitAll()
-
-                        // auth
-                        .requestMatchers("/api/auth/**").permitAll()
-
-                        // public
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-
-                        // admin
-                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
-
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                        .anyRequest().permitAll()
+                );
 
         return http.build();
     }
