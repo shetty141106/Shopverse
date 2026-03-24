@@ -22,19 +22,12 @@ public class JwtFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
     public String extractRole(String token) {
-        return extractAllClaims(token).get("role", String.class);
+        return jwtUtil.extractRole(token);
     }
 
     public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject();
+        return jwtUtil.extractUsername(token);
     }
 
     @Override

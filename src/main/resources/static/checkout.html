@@ -24,19 +24,22 @@
 
 <h1>Checkout</h1>
 
-<form class="checkout-form" >
+<form class="checkout-form" onsubmit="placeOrder(event)">
 
-<input type="text" placeholder="Full Name" required>
+<input type="text" id="checkout-fullname" placeholder="Full Name" required>
 
-<input type="email" placeholder="Email Address" required>
+<input type="email" id="checkout-email" placeholder="Email Address" required>
 
-<input type="text" placeholder="Shipping Address" required>
+<input type="text" id="checkout-address" placeholder="Shipping Address" required>
 
-<input type="text" placeholder="City" required>
+<input type="text" id="checkout-city" placeholder="City" required>
 
-<input type="text" placeholder="Postal Code" required>
+<input type="text" id="checkout-postal" placeholder="Postal Code" required>
 
-    <button type="submit">Place Order</button>
+<div id="checkout-items-preview"></div>
+<p>Total: ₹<span id="checkout-total">0</span></p>
+
+<button type="submit">Place Order</button>
 
 </form>
 

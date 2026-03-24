@@ -1,29 +1,57 @@
 const API_URL = "https://shopverseultra.onrender.com/api";
 const path = window.location.pathname;
 
+// ================= UTILITY FUNCTIONS =================
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// Initialize navbar and cart on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateNavbar();
+    updateCartCount();
+});
+
 // ================= NAVBAR =================
 function updateNavbar() {
-
     const user = JSON.parse(localStorage.getItem("user"));
-
     const authLink = document.getElementById("auth-link");
     const adminLink = document.getElementById("admin-link");
 
-    // ✅ ADD THIS CHECK
     if (!authLink || !adminLink) return;
 
     if (user) {
-        authLink.innerHTML = `<a href="#" onclick="logout()">Logout</a>`;
+        const logoutLink = document.createElement('a');
+        logoutLink.href = '#';
+        logoutLink.textContent = 'Logout';
+        logoutLink.onclick = (e) => { e.preventDefault(); logout(); };
+        authLink.innerHTML = '';
+        authLink.appendChild(logoutLink);
 
         if (user.role === "ADMIN") {
-            adminLink.innerHTML = `<a href="admin.html">Admin</a>`;
+            const adminLink_elem = document.createElement('a');
+            adminLink_elem.href = "admin.html";
+            adminLink_elem.textContent = 'Admin';
+            adminLink.innerHTML = '';
+            adminLink.appendChild(adminLink_elem);
         } else {
             adminLink.innerHTML = "";
         }
     } else {
-        authLink.innerHTML = `<a href="login.html">Login</a>`;
+        const loginLink = document.createElement('a');
+        loginLink.href = "login.html";
+        loginLink.textContent = 'Login';
+        authLink.innerHTML = '';
+        authLink.appendChild(loginLink);
         adminLink.innerHTML = "";
     }
+    updateCartCount();
 }
 
 
@@ -104,13 +132,19 @@ async function loadProducts(keyword = "") {
     }
 
     products.forEach(p => {
-        container.innerHTML += `
-    <div class="card" onclick="viewProduct(${p.id})">
-        <img src="https://shopverseultra.onrender.com/uploads/${p.image}" alt="product">
-        <h3>${p.name}</h3>
-        <p>₹${p.price}</p>
-        <button onclick="addToCart(${p.id}); event.stopPropagation();">Add to Cart</button>
-    </div>`;
+        const safeImage = escapeHtml(p.image);
+        const safeName = escapeHtml(p.name);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+    <img src="https://shopverseultra.onrender.com/uploads/${safeImage}" alt="product">
+    <h3>${safeName}</h3>
+    <p>₹${p.price}</p>
+    <button onclick="addToCart(${p.id}); event.stopPropagation();">Add to Cart</button>
+        `;
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => viewProduct(p.id));
+        container.appendChild(card);
     });
 }
 
@@ -152,7 +186,8 @@ function viewProduct(id) {
 let selectedCategory = "all";
 
 function filterProducts(category) {
-
+    selectedCategory = category;
+    loadProducts();
 }
 
 
@@ -180,14 +215,17 @@ async function loadAdminProducts(){
     }
 
     products.forEach(p => {
-        table.innerHTML += `
-        <tr>
-            <td><img src="https://shopverseultra.onrender.com/uploads/${p.image}" width="50" alt="product"></td>
-            <td>${p.name}</td>
-            <td>₹${p.price}</td>
-            <td><button onclick="editProduct(${p.id}, '${p.name}', ${p.price})">Edit</button></td>
-            <td><button onclick="deleteProduct(${p.id})">Delete</button></td>
-        </tr>`;
+        const row = document.createElement('tr');
+        const safeImage = escapeHtml(p.image);
+        const safeName = escapeHtml(p.name);
+        row.innerHTML = `
+        <td><img src="https://shopverseultra.onrender.com/uploads/${safeImage}" width="50" alt="product"></td>
+        <td>${safeName}</td>
+        <td>₹${p.price}</td>
+        <td><button onclick="editProduct(${p.id}, '${safeName}', ${p.price})">Edit</button></td>
+        <td><button onclick="if(confirm('Delete this product?')) deleteProduct(${p.id})">Delete</button></td>
+        `;
+        table.appendChild(row);
     });
 }
 
@@ -472,17 +510,38 @@ async function placeOrder(event){
     event.preventDefault();
 
     const user = JSON.parse(localStorage.getItem("user"));
-    if(!user) return alert("Login first");
+    if(!user) return showToast("Login first");
 
-    const res = await authFetch(`https://shopverseultra.onrender.com/api/orders/place?userId=${user.id}`,
-        { method: "POST" }
-    );
+    const fullname = document.getElementById("checkout-fullname")?.value;
+    const email = document.getElementById("checkout-email")?.value;
+    const address = document.getElementById("checkout-address")?.value;
+    const city = document.getElementById("checkout-city")?.value;
+    const postal = document.getElementById("checkout-postal")?.value;
 
-    if(res.ok){
-        alert("Order placed successfully!");
-        window.location.href = "user.html?refresh=true";
-    } else {
-        alert("Failed to place order");
+    if (!fullname || !email || !address || !city || !postal) {
+        showToast("Please fill all fields");
+        return;
+    }
+
+    if (email !== user.email) {
+        showToast("Email must match your account");
+        return;
+    }
+
+    try {
+        const res = await authFetch(`https://shopverseultra.onrender.com/api/orders/place?userId=${user.id}`,
+            { method: "POST" }
+        );
+
+        if(res && res.ok){
+            showToast("Order placed successfully!");
+            setTimeout(() => window.location.href = "user.html?refresh=true", 1000);
+        } else {
+            showToast("Failed to place order");
+        }
+    } catch(err) {
+        console.error("Order error:", err);
+        showToast("Error placing order: " + err.message);
     }
 }
 
@@ -583,29 +642,42 @@ document.addEventListener("click", async (e) => {
 });
 
 async function loadCheckout(){
-
     const user = JSON.parse(localStorage.getItem("user"));
-    if(!user) return;
+    if(!user) {
+        window.location.href = "login.html";
+        return;
+    }
 
-    const res = await authFetch(`https://shopverseultra.onrender.com/api/cart/user/${user.id}`);
-    const items = await res.json();
+    try {
+        const res = await authFetch(`https://shopverseultra.onrender.com/api/cart/user/${user.id}`);
+        if (!res || !res.ok) throw new Error("Failed to load cart");
+        
+        const items = await res.json();
+        const container = document.getElementById("checkout-items-preview");
+        const totalEl = document.getElementById("checkout-total");
 
-    const container = document.getElementById("checkout-items");
-    const totalEl = document.getElementById("checkout-total");
+        let total = 0;
+        if (container) container.innerHTML = "";
 
-    let total = 0;
-    container.innerHTML = "";
+        items.forEach(item => {
+            total += item.price * item.quantity;
+            const safeName = escapeHtml(item.name);
+            if (container) {
+                const p = document.createElement('p');
+                p.textContent = `${safeName} × ${item.quantity} = ₹${item.price * item.quantity}`;
+                container.appendChild(p);
+            }
+        });
 
-    items.forEach(item => {
+        if (totalEl) totalEl.innerText = total;
 
-        total += item.price * item.quantity;
-
-        container.innerHTML += `
-            <p>${item.name} × ${item.quantity} = ₹${item.price * item.quantity}</p>
-        `;
-    });
-
-    totalEl.innerText = total;
+        // Fill in user email
+        const emailEl = document.getElementById("checkout-email");
+        if (emailEl) emailEl.value = user.email || "";
+    } catch(err) {
+        console.error("Checkout load error:", err);
+        showToast("Error loading checkout");
+    }
 }
 
 async function updateCartCount(){
