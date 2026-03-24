@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/orders/count").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/orders/count").permitAll()
 
                         // cart requires login
                         .requestMatchers("/api/cart/**").authenticated()
