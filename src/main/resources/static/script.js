@@ -17,7 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNavbar();
     updateCartCount();
 });
-
+function logout(){
+    localStorage.clear();
+    alert("Logged out successfully");
+    window.location.href = "login.html";
+}
 // ================= NAVBAR =================
 function updateNavbar() {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -840,24 +844,38 @@ async function registerUser(event){
     const email = document.getElementById("reg-email").value;
     const password = document.getElementById("reg-password").value;
     const role = document.getElementById("reg-role").value;
+    const adminKey = document.getElementById("admin-key").value;
 
-    const res = await fetch("https://shopverseultra.onrender.com/api/auth/register", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ name, email, password, role })
-    });
-
-    if(res.ok){
-        alert("Registration successful!");
-        window.location.href = "login.html";
-    } else {
-        alert("Registration failed!");
+    // 🔐 SECURITY CHECK
+    if(role === "ADMIN" && adminKey !== "12345"){
+        alert("Invalid admin key!");
+        return;
     }
-}
-function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "login.html";
+
+    try{
+        const res = await fetch(`${API_URL}/auth/register`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+                role
+            })
+        });
+
+        if(res.ok){
+            alert("Registration successful!");
+            window.location.href = "login.html";
+        } else {
+            const err = await res.text();
+            alert("Register failed: " + err);
+        }
+
+    } catch(e){
+        console.error(e);
+        alert("Server error");
+    }
 }
 function loginUser(event) {
     event.preventDefault();
@@ -1027,30 +1045,14 @@ window.onload = function() {
         checkAuth();
         loadOrders();
     }
+
+    const searchInput = document.getElementById("searchInput");
+if(searchInput){
+    searchInput.addEventListener("input", searchProducts);
+}
 };
 
    
-        const searchInput = document.getElementById("searchInput");
-        if(searchInput){
-            searchInput.addEventListener("input", searchProducts);
-        }
-
-
-    if(path.includes("user.html")){
-        checkAuth();          // 🔐 ADD THIS
-        loadCartCountBox();
-        loadOrdersSummary();
-    }
-
-    if(path.includes("cart.html")){
-        checkAuth();          // 🔐 ADD THIS
-        loadCartFromBackend();
-        updateCartCount();
-    }
-    if(path.includes("orders.html")){
-        checkAuth();          // 🔐 ADD THIS
-        loadOrders();
-    }
 
 document.addEventListener("click", (e) => {
 
