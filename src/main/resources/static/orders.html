@@ -1,88 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>My Orders</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>My Orders | Shopverse</title>
 
-    <style>
-        body {
-            background: #f4f6f9;
-            font-family: Arial, sans-serif;
-            margin: 0;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f5f5f7, #eaeaea);
+}
 
-        h1 {
-            text-align: center;
-            margin-top: 30px;
-        }
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 18px 50px;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    backdrop-filter: blur(10px);
+}
 
-        .orders-container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-        }
+.nav-links a {
+    color: white;
+    margin-left: 25px;
+    text-decoration: none;
+}
 
-        .order-card {
-            background: white;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-        .status {
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
+/* HEADER */
+.header {
+    text-align: center;
+    margin: 50px 0 30px;
+}
 
-        .placed { background: #e0e0e0; }
-        .shipped { background: #007bff; color: white; }
-        .delivered { background: #28a745; color: white; }
+.header h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
 
-        .progress {
-            height: 6px;
-            background: #eee;
-            border-radius: 10px;
-            margin-top: 10px;
-        }
+.header p {
+    color: gray;
+}
 
-        .progress-bar {
-            height: 100%;
-            border-radius: 10px;
-            width: 60%;
-            transition: 0.5s ease;
-        }
+/* CONTAINER */
+.orders-container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
 
-    </style>
+/* ORDER CARD */
+.order-card {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    transition: 0.4s;
+    animation: fadeUp 0.6s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-8px) scale(1.01);
+}
+
+/* TOP ROW */
+.order-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* STATUS */
+.status {
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.placed { background: gray; }
+.shipped { background: #007bff; }
+.delivered { background: #28a745; }
+
+/* PRICE */
+.price {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+/* TIMELINE */
+.timeline {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    position: relative;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #ddd;
+    z-index: 0;
+}
+
+.step {
+    position: relative;
+    text-align: center;
+    flex: 1;
+    z-index: 1;
+}
+
+.circle {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    margin: auto;
+    background: #ddd;
+}
+
+.active .circle {
+    background: #007bff;
+}
+
+.completed .circle {
+    background: #28a745;
+}
+
+.label {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+    from {opacity: 0; transform: translateY(30px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+</style>
 </head>
 
 <body>
 
-<h1>My Orders</h1>
+<nav class="navbar">
+    <div>Shopverse</div>
+    <div class="nav-links">
+        <a href="index.html">Store</a>
+        <a href="shop.html">Products</a>
+        <a href="cart.html">Cart</a>
+    </div>
+</nav>
 
-<div class="orders-container">
-    <div id="order-list"></div>
+<div class="header">
+    <h1>My Orders</h1>
+    <p>Track your purchases in real time</p>
 </div>
 
-<div class="order-card">
-    <div class="order-header">
-        <h3>Order #12345</h3>
-        <span class="status shipped">SHIPPED</span>
-    </div>
-
-    <p>Total: ₹1200</p>
-
-    <div class="progress">
-        <div class="progress-bar shipped"></div>
-    </div>
-</div>
+<div class="orders-container" id="orders-container"></div>
 
 <script src="script.js"></script>
-
-<script>
-    loadOrders(); // ✅ correct
-</script>
 
 </body>
 </html>

@@ -75,34 +75,7 @@ function checkAdminAccess(){
         window.location.href = "user.html";
     }
 }
-async function loadStats(){
-    try{
-        async function loadStats(){
-    try{
-        const productsRes = await authFetch(`${API_URL}/products`);
-        if (!productsRes || !productsRes.ok) return;
-        const products = await productsRes.json();
 
-        const ordersRes = await authFetch(`${API_URL}/admin/orders`);
-        if (!ordersRes || !ordersRes.ok) return;
-        const orders = await ordersRes.json();
-
-        document.getElementById("total-products").innerText = products.length;
-        document.getElementById("total-orders").innerText = orders.length;
-
-    } catch(e){
-        console.log("Stats error:", e);
-    }
-}
-       
-
-        document.getElementById("total-products").innerText = products.length;
-        document.getElementById("total-orders").innerText = orders.length;
-
-    } catch(e){
-        console.log("Stats error:", e);
-    }
-}
 function loadAdminName(){
     const user = JSON.parse(localStorage.getItem("user"));
     const el = document.getElementById("admin-name");
@@ -382,34 +355,29 @@ async function editProduct(id, oldName, oldPrice){
 
 async function loadAdminStats() {
     try {
-        // ✅ PRODUCTS
-        const pRes = await fetch("https://shopverseultra.onrender.com/api/products");
-
-        if (!pRes.ok) {
-            console.error("Failed to fetch products");
-            return;
-        }
-
+        // PRODUCTS (PUBLIC API)
+        const pRes = await fetch(`${API_URL}/products`);
         const products = await pRes.json();
+
         document.getElementById("total-products").innerText = products.length;
 
-        // ✅ ORDERS (REAL COUNT)
-        const oRes = await fetch("https://shopverseultra.onrender.com/api/orders/count");
+        // ORDERS (ADMIN API → NEED TOKEN)
+        const oRes = await authFetch(`${API_URL}/admin/orders`);
 
-        if (!oRes.ok) {
-            console.error("Failed to fetch orders");
+        if (!oRes || !oRes.ok) {
+            console.error("Orders API failed:", oRes?.status);
             document.getElementById("total-orders").innerText = "0";
             return;
         }
 
         const orders = await oRes.json();
-        document.getElementById("total-orders").innerText = orders;
+
+        document.getElementById("total-orders").innerText = orders.length;
 
     } catch (err) {
         console.error("Stats error:", err);
     }
 }
-
 async function addProduct() {
     try {
         const name = document.querySelector("#product-name").value;
@@ -587,40 +555,36 @@ function searchProducts() {
 async function placeOrder(event){
     event.preventDefault();
 
+    const btn = document.querySelector("button[type='submit']");
+    btn.disabled = true;
+
     const user = JSON.parse(localStorage.getItem("user"));
-    if(!user) return showToast("Login first");
-
-    const fullname = document.getElementById("checkout-fullname")?.value;
-    const email = document.getElementById("checkout-email")?.value;
-    const address = document.getElementById("checkout-address")?.value;
-    const city = document.getElementById("checkout-city")?.value;
-    const postal = document.getElementById("checkout-postal")?.value;
-
-    if (!fullname || !email || !address || !city || !postal) {
-        showToast("Please fill all fields");
-        return;
-    }
-
-    if (email !== user.email) {
-        showToast("Email must match your account");
-        return;
+    if(!user){
+        btn.disabled = false;
+        return showToast("Login first");
     }
 
     try {
-        const res = await authFetch(`https://shopverseultra.onrender.com/api/orders/place?userId=${user.id}`,
+        const res = await authFetch(
+            `${API_URL}/orders/place?userId=${user.id}`,
             { method: "POST" }
         );
 
-        if(res && res.ok){
+        // 🔥 FIX: HANDLE RESPONSE PROPERLY
+        if(res && (res.status === 200 || res.status === 201)){
             showToast("Order placed successfully!");
-            setTimeout(() => window.location.href = "user.html?refresh=true", 1000);
+            setTimeout(() => window.location.href = "user.html", 1000);
         } else {
-            showToast("Failed to place order");
+            console.error("Order failed:", res?.status);
+            showToast("Order placed but response error ⚠️");
         }
+
     } catch(err) {
         console.error("Order error:", err);
-        showToast("Error placing order: " + err.message);
+        showToast("Order placed but frontend error ⚠️");
     }
+
+    btn.disabled = false;
 }
 
 async function loadCartFromBackend(){
@@ -792,89 +756,72 @@ async function loadCartCountBox(){
 }
 
 // ================= ORDERS =================
-async function loadOrders(){
-
-    const path = window.location.pathname;
-
-    let url = "";
-
-    if(path.includes("admin.html")){
-        url = "https://shopverseultra.onrender.com/api/admin/orders";
-    } else {
-        const user = JSON.parse(localStorage.getItem("user"));
-        url = `https://shopverseultra.onrender.com/api/orders/${encodeURIComponent(user.email)}`;
+async function loadOrders() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+        window.location.href = "login.html";
+        return;
     }
 
-    const res = await authFetch(url);
-    if (!res || !res.ok) return;
+    const container = document.getElementById("orders-container");
+    container.innerHTML = "Loading orders...";
 
-const orders = await res.json();
-
-    // ================= ADMIN TABLE =================
-    if(path.includes("admin.html")){
-
-        const table = document.querySelector("#ordersTable tbody");
-        if(!table) return;
-
-        table.innerHTML = "";
-
-        orders.forEach(order => {
-            table.innerHTML += `
-                <tr>
-                    <td>${order.id}</td>
-                    <td>${order.userEmail}</td>
-                    <td>₹${order.totalAmount}</td>
-
-                    <td>
-                        <span style="
-                            padding:5px 10px;
-                            border-radius:8px;
-                            color:white;
-                            background:
-                                ${order.status === "PLACED" ? "gray" :
-                order.status === "SHIPPED" ? "blue" :
-                    order.status === "DELIVERED" ? "green" : "red"};
-                        ">
-                            ${order.status}
-                        </span>
-                    </td>
-
-                    <td>
-                        <select id="status-${order.id}">
-                            <option value="PLACED" ${order.status==="PLACED"?"selected":""}>PLACED</option>
-                            <option value="SHIPPED" ${order.status==="SHIPPED"?"selected":""}>SHIPPED</option>
-                            <option value="DELIVERED" ${order.status==="DELIVERED"?"selected":""}>DELIVERED</option>
-                            <option value="CANCELLED" ${order.status==="CANCELLED"?"selected":""}>CANCELLED</option>
-                        </select>
-
-                        ${
-                (order.status === "DELIVERED" || order.status === "CANCELLED")
-                    ? `<button disabled>Locked</button>`
-                    : `<button onclick="updateStatus(${order.id})">Update</button>`
-            }
-                    </td>
-                </tr>
-            `;
-        });
-    }
-
-    // ================= USER PAGE =================
-    else {
-
-        const container = document.getElementById("order-list");
-        if(!container) return;
+    try {
+        const res = await authFetch(`${API_URL}/orders/${user.email}`);
+        const orders = await res.json();
 
         container.innerHTML = "";
 
-        orders.forEach(order => {
-            container.innerHTML += `
-                <div class="order-card">
-                    <h3>Order #${order.id}</h3>
-                    <p>Total: ₹${order.totalAmount}</p>
-                    <p>Status: ${order.status}</p>
+        orders.forEach(o => {
+
+            let statusClass = "placed";
+            let steps = ["active", "", ""];
+
+            if (o.status === "SHIPPED") {
+                statusClass = "shipped";
+                steps = ["completed", "active", ""];
+            }
+
+            if (o.status === "DELIVERED") {
+                statusClass = "delivered";
+                steps = ["completed", "completed", "active"];
+            }
+
+            const card = document.createElement("div");
+            card.className = "order-card";
+
+            card.innerHTML = `
+                <div class="order-top">
+                    <h3>Order #${o.id}</h3>
+                    <span class="status ${statusClass}">${o.status}</span>
+                </div>
+
+                <p class="price">Total: ₹${o.total}</p>
+
+                <div class="timeline">
+                    <div class="step ${steps[0]}">
+                        <div class="circle"></div>
+                        <div class="label">Placed</div>
+                    </div>
+
+                    <div class="step ${steps[1]}">
+                        <div class="circle"></div>
+                        <div class="label">Shipped</div>
+                    </div>
+
+                    <div class="step ${steps[2]}">
+                        <div class="circle"></div>
+                        <div class="label">Delivered</div>
+                    </div>
                 </div>
             `;
+
+            container.appendChild(card);
         });
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = "Failed to load orders";
     }
 }
 
@@ -1056,8 +1003,8 @@ window.onload = function() {
         checkAdminAccess();
         loadAdminName();
         loadAdminStats();
+        
         loadAdminProducts();
-        loadStats();
         loadOrders();
         loadChart();
     }
@@ -1120,21 +1067,6 @@ document.addEventListener("click", (e) => {
     }
 });
 
-document.addEventListener("click", async (e) => {
-
-    if(e.target.id === "place-order"){
-
-        const user = JSON.parse(localStorage.getItem("user"));
-
-        await authFetch("https://shopverseultra.onrender.com/api/orders/place", {
-            method: "POST"
-        });
-
-        alert("Order placed successfully!");
-
-        window.location.href = "orders.html";
-    }
-});
 
 document.addEventListener("DOMContentLoaded", () => {
 

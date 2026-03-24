@@ -1,66 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>NovaStore</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Shopverse</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f5f7;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 40px;
+    background: #111;
+    color: white;
+}
+
+.nav-links a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+}
+
+/* HERO */
+.hero {
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #111, #444);
+    color: white;
+    text-align: center;
+    animation: fadeIn 1.5s ease;
+}
+
+.hero h1 {
+    font-size: 70px;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.hero p {
+    margin: 15px 0;
+    font-size: 20px;
+    opacity: 0.8;
+}
+
+.hero button {
+    margin-top: 20px;
+    padding: 14px 30px;
+    border-radius: 30px;
+    border: none;
+    background: white;
+    color: black;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.hero button:hover {
+    transform: scale(1.1);
+    background: #ddd;
+}
+
+/* FEATURES */
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 60px 20px;
+}
+
+.feature-card {
+    background: white;
+    padding: 30px;
+    width: 250px;
+    border-radius: 20px;
+    text-align: center;
+    transition: 0.3s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+/* CTA */
+.cta {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.cta button {
+    padding: 15px 35px;
+    border-radius: 30px;
+    border: none;
+    background: black;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+</style>
 </head>
+
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="logo">
-    <a href="index.html">Shopverse</a>
+<nav class="navbar">
+    <div class="logo">Shopverse</div>
+    <div class="nav-links">
+        <a href="index.html">Store</a>
+        <a href="shop.html">Products</a>
+        <a href="cart.html">Cart</a>
     </div>
-    <ul class="nav-links">
-      <li><a href="index.html">Store</a></li>
-      <a href="shop.html">Products</a>
-      <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
-      <li id="admin-link"></li>
-      <li id="auth-link"><a href="login.html">Login</a></li>
-    </ul>
-  </nav>
+</nav>
 
-  <!-- Hero Section -->
-  <section class="hero">
+<!-- HERO -->
+<section class="hero">
     <h1>SHOPVERSE</h1>
-    <p>Where Convenience Meets Intelligent Shopping.</p>
-    <a href="shop.html">
-    <button class="primary-btn">Explore</button>
-    </a>
-  </section>
+    <p>Where Convenience Meets Intelligent Shopping</p>
+    <button onclick="window.location.href='shop.html'">Explore Now</button>
+</section>
 
-  <!-- Products -->
-  <section class="products">
-    <h2>Featured Collection</h2>
-
-    <div class="product-grid">
-      <div class="card">
-        <img src="images/headphone.jpg" alt="">
-        <h3>Wireless Headphones</h3>
-        <p>$199</p>
-      </div>
-
-      <div class="card">
-        <img src="images/watch.jpg" alt="">
-        <h3>Smart Watch</h3>
-        <p>$249</p>
-      </div>
-
-      <div class="card">
-        <img src="images/speaker.jpg" alt="">
-        <h3>Premium Speaker</h3>
-        <p>$149</p>
-      </div>
+<!-- FEATURES -->
+<section class="features">
+    <div class="feature-card">
+        <h3>⚡ Fast Shopping</h3>
+        <p>Lightning fast experience with smooth UI</p>
     </div>
-  </section>
 
-  <!-- Footer -->
-  <footer>
-    <p>© 2026 Shopverse. All rights reserved.</p>
-  </footer>
+    <div class="feature-card">
+        <h3>🔒 Secure</h3>
+        <p>JWT protected secure transactions</p>
+    </div>
 
-<script src="script.js"></script>
+    <div class="feature-card">
+        <h3>📦 Smart Orders</h3>
+        <p>Track and manage your orders easily</p>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <h2>Start Shopping Today</h2>
+    <button onclick="window.location.href='shop.html'">Go to Store</button>
+</section>
 
 </body>
 </html>

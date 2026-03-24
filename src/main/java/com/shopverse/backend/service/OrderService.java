@@ -45,8 +45,12 @@ public class OrderService {
         order.setStatus(OrderStatus.PLACED);
 
         List<OrderItem> orderItems = new ArrayList<>();
-        double total = 0;
 
+        double total = cartItems.stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
+
+        order.setTotal(total);
 
         for (CartItem cart : cartItems) {
 
