@@ -3,6 +3,7 @@ package com.shopverse.backend.controller;
 import com.shopverse.backend.dto.UpdateStatusRequest;
 import com.shopverse.backend.model.Order;
 
+import com.shopverse.backend.repository.OrderRepository;
 import com.shopverse.backend.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +16,11 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final OrderRepository orderRepository;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, OrderRepository orderRepository) {
         this.orderService = orderService;
+        this.orderRepository = orderRepository;
     }
 
     // ✅ PLACE ORDER
@@ -36,6 +39,11 @@ public class OrderController {
     @GetMapping("/admin/orders")
     public List<Order> getAllOrders() {
         return orderService.getAllOrders();
+    }
+
+    @GetMapping("/count")
+    public long getOrderCount() {
+        return orderRepository.count();
     }
 
     // ✅ ADMIN - UPDATE STATUS (ONLY ONE API)

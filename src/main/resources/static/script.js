@@ -77,15 +77,23 @@ function checkAdminAccess(){
 }
 async function loadStats(){
     try{
+        async function loadStats(){
+    try{
         const productsRes = await authFetch(`${API_URL}/products`);
+        if (!productsRes || !productsRes.ok) return;
+        const products = await productsRes.json();
 
-if (!productsRes || !productsRes.ok) return;
-const products = await productsRes.json();
+        const ordersRes = await authFetch(`${API_URL}/admin/orders`);
+        if (!ordersRes || !ordersRes.ok) return;
+        const orders = await ordersRes.json();
 
-if (!ordersRes || !ordersRes.ok) return;
-const orders = await ordersRes.json();
+        document.getElementById("total-products").innerText = products.length;
+        document.getElementById("total-orders").innerText = orders.length;
 
-        const ordersRes = await authFetch("https://shopverseultra.onrender.com/api/admin/orders");
+    } catch(e){
+        console.log("Stats error:", e);
+    }
+}
        
 
         document.getElementById("total-products").innerText = products.length;
@@ -108,53 +116,75 @@ function loadAdminName(){
 async function loadProducts(keyword = "") {
 
     const container = document.getElementById("product-list");
-    if(!container) return;
+    if (!container) return;
 
     container.innerHTML = "Loading products...";
 
-    let url = API_URL;
+    let url = "https://shopverseultra.onrender.com/api/products";
 
-    // 🔥 ONLY SEARCH (NO CATEGORY)
-    if(keyword && keyword.trim() !== ""){
-        url = `${API_URL}/search?keyword=${keyword}`;
+    try {
+        console.log("Fetching:", url);
+
+        const res = await fetch(url);
+
+        if (!res.ok) {
+            console.error("API failed:", res.status);
+            container.innerHTML = "Failed to load products";
+            return;
+        }
+
+        let products = await res.json();
+
+        if (!Array.isArray(products)) {
+            console.error("Invalid response:", products);
+            container.innerHTML = "Error loading products";
+            return;
+        }
+
+        // 🔥 CLIENT SIDE SEARCH (IMPORTANT)
+        if (keyword && keyword.trim() !== "") {
+            products = products.filter(p =>
+                p.name.toLowerCase().includes(keyword.toLowerCase())
+            );
+        }
+
+        container.innerHTML = "";
+
+        if (products.length === 0) {
+            container.innerHTML = "No products found";
+            return;
+        }
+
+        products.forEach(p => {
+
+            const safeImage = p.image || "";
+            const safeName = p.name || "No Name";
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            card.innerHTML = `
+                <img src="https://shopverseultra.onrender.com/uploads/${safeImage}" 
+                     onerror="this.src='https://via.placeholder.com/150'">
+                <h3>${safeName}</h3>
+                <p>₹${p.price}</p>
+                <button onclick="addToCart(${p.id}); event.stopPropagation();">
+                    Add to Cart
+                </button>
+            `;
+
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+                window.location.href = `product.html?id=${p.id}`;
+            });
+
+            container.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error("Error:", err);
+        container.innerHTML = "Server error";
     }
-
-    const res = await fetch(url);
-    if (!res) return;   // 🔥 ADD THIS
-    if (!res.ok) {
-        console.error("API failed:", res.status);
-        return;
-    }
-
-    const products = await res.json();
-    if (!Array.isArray(products)) {
-        console.error("Invalid response:", products);
-        container.innerHTML = "Error loading products";
-        return;
-    }
-
-    container.innerHTML = "";
-
-    if(products.length === 0){
-        container.innerHTML = "No products found";
-        return;
-    }
-
-    products.forEach(p => {
-        const safeImage = escapeHtml(p.image);
-        const safeName = escapeHtml(p.name);
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-    <img src="https://shopverseultra.onrender.com/uploads/${safeImage}" alt="product">
-    <h3>${safeName}</h3>
-    <p>₹${p.price}</p>
-    <button onclick="addToCart(${p.id}); event.stopPropagation();">Add to Cart</button>
-        `;
-        card.style.cursor = 'pointer';
-        card.addEventListener('click', () => viewProduct(p.id));
-        container.appendChild(card);
-    });
 }
 
 async function loadProductDetails() {
@@ -350,6 +380,36 @@ async function editProduct(id, oldName, oldPrice){
     loadAdminProducts();
 }
 
+async function loadAdminStats() {
+    try {
+        // ✅ PRODUCTS
+        const pRes = await fetch("https://shopverseultra.onrender.com/api/products");
+
+        if (!pRes.ok) {
+            console.error("Failed to fetch products");
+            return;
+        }
+
+        const products = await pRes.json();
+        document.getElementById("total-products").innerText = products.length;
+
+        // ✅ ORDERS (REAL COUNT)
+        const oRes = await fetch("https://shopverseultra.onrender.com/api/orders/count");
+
+        if (!oRes.ok) {
+            console.error("Failed to fetch orders");
+            document.getElementById("total-orders").innerText = "0";
+            return;
+        }
+
+        const orders = await oRes.json();
+        document.getElementById("total-orders").innerText = orders;
+
+    } catch (err) {
+        console.error("Stats error:", err);
+    }
+}
+
 async function addProduct() {
     try {
         const name = document.querySelector("#product-name").value;
@@ -508,10 +568,10 @@ async function addToCart(productId){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return alert("Login first");
 
-    await authFetch("https://shopverseultra.onrender.com/api/cart/add", {
+    await authFetch(`${API_URL}/cart/add`, {
         method: "POST",
-
         body: JSON.stringify({
+            
             productId: productId,
             quantity: 1
         })
@@ -818,36 +878,7 @@ const orders = await res.json();
     }
 }
 
-async function placeOrder(event){
-    event.preventDefault(); // ✅ STOP PAGE RELOAD
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    if(!user){
-        alert("Login first");
-        window.location.href = "login.html";
-        return;
-    }
-
-    try {
-
-        const res = await authFetch(`https://shopverseultra.onrender.com/api/orders/place?userId=${user.id}`, {
-            method: "POST"
-        });
-
-        if(!res.ok){
-            alert("Order failed");
-            return;
-        }
-
-        alert("Order placed successfully 🎉");
-
-        window.location.href = "user.html";
-
-    } catch(err){
-        console.error(err);
-        alert("Something went wrong");
-    }
-}
 
 async function registerUser(event){
     event.preventDefault();
@@ -1024,6 +1055,7 @@ window.onload = function() {
     if(path.includes("admin.html")){
         checkAdminAccess();
         loadAdminName();
+        loadAdminStats();
         loadAdminProducts();
         loadStats();
         loadOrders();
@@ -1053,6 +1085,10 @@ window.onload = function() {
         loadCartFromBackend();
         updateCartCount();
     }
+    if(path.includes("checkout.html")){
+        checkAuth();
+         loadCheckout();   // 🔥 ADD THIS
+}
 
     if(path.includes("orders.html")){
         checkAuth();
