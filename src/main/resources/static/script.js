@@ -755,6 +755,45 @@ async function loadCartCountBox(){
     if(box) box.innerText = count;
 }
 
+
+function updateNavbar() {
+    const nav = document.getElementById("nav-links");
+    if (!nav) return;
+
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    let html = `
+        <li><a href="index.html">Store</a></li>
+        <li><a href="shop.html">Products</a></li>
+        <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+    `;
+
+    if (token && user) {
+        html += `<li><a href="orders.html">Orders</a></li>`;
+
+        if (user.role === "ADMIN") {
+            html += `<li><a href="admin.html">Admin</a></li>`;
+        }
+
+        html += `<li><a href="#" onclick="logout()">Logout</a></li>`;
+    } else {
+        html += `<li><a href="login.html">Login</a></li>`;
+    }
+
+    nav.innerHTML = html;
+}
+
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    window.location.href = "login.html";
+}
+
+window.onload = function () {
+    updateNavbar();
+};
 // ================= ORDERS =================
 async function loadOrders() {
     const user = JSON.parse(localStorage.getItem("user"));
