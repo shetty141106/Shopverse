@@ -77,11 +77,16 @@ function checkAdminAccess(){
 }
 async function loadStats(){
     try{
-        const productsRes = await authFetch("https://shopverseultra.onrender.com/api/products");
-        const products = await productsRes.json();
+        const productsRes = await authFetch(`${API_URL}/products`);
+
+if (!productsRes || !productsRes.ok) return;
+const products = await productsRes.json();
+
+if (!ordersRes || !ordersRes.ok) return;
+const orders = await ordersRes.json();
 
         const ordersRes = await authFetch("https://shopverseultra.onrender.com/api/admin/orders");
-        const orders = await ordersRes.json();
+       
 
         document.getElementById("total-products").innerText = products.length;
         document.getElementById("total-orders").innerText = orders.length;
@@ -203,13 +208,18 @@ async function loadAdminProducts(){
     // ✅ FIX: use table instead of container
     table.innerHTML = "<tr><td colspan='5'>Loading products...</td></tr>";
 
-    const res = await authFetch(API_URL);
+    const res = await authFetch(`${API_URL}/products`);
     if (!res.ok) {
         console.error("API failed:", res.status);
         return;
     }
 
-    const products = await res.json();
+    if (!res || !res.ok) {
+    console.error("API failed:", res?.status);
+    return;
+}
+
+const products = await res.json();
 
     table.innerHTML = "";
 
@@ -237,11 +247,9 @@ async function loadAdminProducts(){
 async function loadAdminOrders(){
 
     const res = await authFetch("https://shopverseultra.onrender.com/api/admin/orders");
-    if (!res.ok) {
-        console.error("Orders API failed:", res.status);
-        return;
-    }
-    const orders = await res.json();
+   if (!res || !res.ok) return;
+
+const orders = await res.json();
 
     const container = document.getElementById("order-list");
 
@@ -291,11 +299,12 @@ async function updateStatus(orderId){
 function authFetch(url, options = {}) {
 
     const token = localStorage.getItem("token");
+    console.log("TOKEN:", token);
 
-    if (!token) {
-        window.location.href = "login.html";
-        return Promise.reject("No token");
-    }
+if (!token) {
+    console.error("No token found");
+    return Promise.reject("No token");
+}
 
     return fetch(url, {
         ...options,
@@ -306,12 +315,17 @@ function authFetch(url, options = {}) {
         }
     }).then(res => {
 
-        if (res.status === 401 || res.status === 403) {
-            localStorage.clear();
-            alert("Session expired. Login again.");
-            window.location.href = "login.html";
-            return null;
-        }
+        if (res.status === 401) {
+    localStorage.clear();
+    alert("Session expired. Login again.");
+    window.location.href = "login.html";
+    return null;
+}
+
+if (res.status === 403) {
+    console.error("Access denied (403)");
+    return res; // 🔥 DO NOT logout
+}
 
         return res;
     });
@@ -732,11 +746,9 @@ async function loadOrders(){
     }
 
     const res = await authFetch(url);
-    if (!res.ok) {
-        console.error("Orders fetch failed:", res.status);
-        return;
-    }
-    const orders = await res.json();
+    if (!res || !res.ok) return;
+
+const orders = await res.json();
 
     // ================= ADMIN TABLE =================
     if(path.includes("admin.html")){
@@ -947,9 +959,10 @@ async function loadOrdersSummary(){
 let chartInstance = null;
 
 async function loadChart(){
-    const res = await authFetch(API_URL);
-    const products = await res.json();
+    const res = await authFetch(`${API_URL}/products`);
+   if (!res || !res.ok) return;
 
+const products = await res.json();
     const labels = products.map(p => p.name);
     const data = products.map(p => p.price);
 
