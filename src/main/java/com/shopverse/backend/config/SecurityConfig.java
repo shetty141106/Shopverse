@@ -43,37 +43,21 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // ✅ allow preflight
+                        // allow OPTIONS (CORS fix)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // ✅ public frontend
-                        .requestMatchers(
-                                "/",
-                                "/**.html",
-                                "/**.css",
-                                "/**.js",
-                                "/images/**",
-                                "/uploads/**"
-                        ).permitAll()
-
-                        // ✅ auth APIs
+                        // public
                         .requestMatchers("/api/auth/**").permitAll()
-
-                        // ✅ public product APIs
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()   // 🔥 FIX IMAGE 403
 
-                        // 🔒 cart MUST be authenticated
+                        // cart requires login
                         .requestMatchers("/api/cart/**").authenticated()
-
-                        // 🔒 admin APIs
-                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )
 
-                // 🔥 VERY IMPORTANT
+                // 🔥 THIS LINE WAS MISSING
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
