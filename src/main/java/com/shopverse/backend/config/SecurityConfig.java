@@ -49,7 +49,7 @@ public class SecurityConfig {
                         // public
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()   // 🔥 FIX IMAGE 403
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
 
                         // cart requires login
                         .requestMatchers("/api/cart/**").authenticated()
