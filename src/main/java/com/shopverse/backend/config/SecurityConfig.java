@@ -39,9 +39,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {})   // 🔥 ADD THIS LINE
+                .cors(cors -> {})
 
                 .authorizeHttpRequests(auth -> auth
+
+                        // 🔥 VERY IMPORTANT (ADD THIS)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // frontend
                         .requestMatchers(
@@ -53,8 +56,8 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/favicon.ico"
                         ).permitAll()
+
                         // auth
-                        .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
 
                         // public
