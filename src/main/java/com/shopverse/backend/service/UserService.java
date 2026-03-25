@@ -32,11 +32,17 @@ public class UserService {
     // ================= LOGIN =================
     public Optional<User> login(String email, String password) {
 
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email.trim());
 
-        if(user.isPresent() && user.get().getPassword().equals(password)) {
-            return user;
+        if(user.isPresent()) {
+            if(user.get().getPassword().equals(password.trim())) {
+                return user;
+            }
         }
+        System.out.println("Input email: " + email);
+        System.out.println("DB email: " + user.get().getEmail());
+        System.out.println("Input password: " + password);
+        System.out.println("DB password: " + user.get().getPassword());
 
         return Optional.empty();
     }
