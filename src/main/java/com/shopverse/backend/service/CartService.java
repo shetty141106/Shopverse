@@ -58,7 +58,7 @@ public class CartService {
                 CartResponse cr = new CartResponse();
                 cr.setId(item.getId());
                 cr.setName(product.getName());
-                cr.setImage(product.getImage());
+                cr.setImage(product.getImageUrl());
                 cr.setPrice(product.getPrice());
                 cr.setQuantity(item.getQuantity());
 

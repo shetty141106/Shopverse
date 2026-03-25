@@ -1,15 +1,11 @@
 package com.shopverse.backend.model;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "orders")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Order {
 
     @Id
@@ -20,7 +16,7 @@ public class Order {
     private double totalAmount;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;   // ✅ FIXED
+    private OrderStatus status;
 
     private LocalDateTime createdAt;
 
@@ -29,4 +25,23 @@ public class Order {
 
     private double total;
 
+    // ✅ GETTERS
+
+    public Long getId() { return id; }
+    public String getUserEmail() { return userEmail; }
+    public double getTotalAmount() { return totalAmount; }
+    public OrderStatus getStatus() { return status; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public List<OrderItem> getItems() { return items; }
+    public double getTotal() { return total; }
+
+    // ✅ SETTERS
+
+    public void setId(Long id) { this.id = id; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
+    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+    public void setStatus(OrderStatus status) { this.status = status; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setItems(List<OrderItem> items) { this.items = items; }
+    public void setTotal(double total) { this.total = total; }
 }
