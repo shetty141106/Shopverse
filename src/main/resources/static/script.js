@@ -536,14 +536,30 @@ async function addToCart(productId){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return alert("Login first");
 
-    await authFetch(`${API_URL}/cart/add`, {
-        method: "POST",
-        body: JSON.stringify({
-            
-            productId: productId,
-            quantity: 1
-        })
-    });
+    // 🔥 get existing cart
+    const res = await authFetch(`${API_URL}/cart/user/${user.id}`);
+    const items = await res.json();
+
+    const existing = items.find(i => i.productId === productId);
+
+    if(existing){
+        // ✅ update quantity
+        await authFetch(`${API_URL}/cart/update/${existing.id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                quantity: existing.quantity + 1
+            })
+        });
+    } else {
+        // ✅ add new item
+        await authFetch(`${API_URL}/cart/add`, {
+            method: "POST",
+            body: JSON.stringify({
+                productId: productId,
+                quantity: 1
+            })
+        });
+    }
 
     updateCartCount();
 }
@@ -553,7 +569,13 @@ function searchProducts() {
 }
 
 async function placeOrder(event){
+   let orderInProgress = false;
+
+async function placeOrder(event){
     event.preventDefault();
+
+    if(orderInProgress) return; // 🚀 prevents double click
+    orderInProgress = true;
 
     const btn = document.querySelector("button[type='submit']");
     btn.disabled = true;
@@ -561,6 +583,7 @@ async function placeOrder(event){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user){
         btn.disabled = false;
+        orderInProgress = false;
         return showToast("Login first");
     }
 
@@ -570,23 +593,22 @@ async function placeOrder(event){
             { method: "POST" }
         );
 
-        // 🔥 FIX: HANDLE RESPONSE PROPERLY
         if(res && (res.status === 200 || res.status === 201)){
             showToast("Order placed successfully!");
             setTimeout(() => window.location.href = "user.html", 1000);
         } else {
-            console.error("Order failed:", res?.status);
-            showToast("Order placed but response error ⚠️");
+            showToast("Order failed ⚠️");
         }
 
     } catch(err) {
-        console.error("Order error:", err);
-        showToast("Order placed but frontend error ⚠️");
+        console.error(err);
+        showToast("Error placing order");
     }
 
+    orderInProgress = false;
     btn.disabled = false;
 }
-
+}
 async function loadCartFromBackend(){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return;
@@ -791,9 +813,7 @@ function logout() {
     window.location.href = "login.html";
 }
 
-window.onload = function () {
-    updateNavbar();
-};
+
 // ================= ORDERS =================
 async function loadOrders() {
     const user = JSON.parse(localStorage.getItem("user"));
