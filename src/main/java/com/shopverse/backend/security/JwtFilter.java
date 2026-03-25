@@ -40,8 +40,9 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = req.getRequestURI();
 
 // ✅ allow public routes
-        if (path.equals("/api/auth/login") ||
-                path.equals("/api/auth/register") ||
+        // ✅ Allow public endpoints FIRST
+        if (path.contains("/api/auth/login") ||
+                path.contains("/api/auth/register") ||
                 path.startsWith("/api/products")) {
 
             chain.doFilter(req, res);

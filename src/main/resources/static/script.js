@@ -932,13 +932,16 @@ function loginUser(event) {
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
 
-    fetch("https://shopverseultra.onrender.com/api/auth/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
+      fetch("https://shopverseultra.onrender.com/api/auth/login", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"   // 🔥 MUST HAVE
+    },
+    body: JSON.stringify({
+        email: email,
+        password: password
     })
+})
         .then(res => {
             if (!res.ok) {
                 throw new Error("Invalid credentials");
