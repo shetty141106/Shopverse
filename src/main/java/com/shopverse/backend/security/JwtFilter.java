@@ -39,13 +39,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = req.getRequestURI();
 
-        // ✅ allow auth endpoints
-        if (path.startsWith("/api/auth")) {
+// ✅ allow public routes
+        if (path.startsWith("/api/auth") ||
+                path.startsWith("/uploads") ||          // 🔥 ADD THIS LINE
+                path.startsWith("/api/products")) {     // optional but recommended
+
             chain.doFilter(req, res);
             return;
         }
 
-        // ✅ allow OPTIONS (CORS)
+// ✅ allow OPTIONS (CORS)
         if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
             chain.doFilter(req, res);
             return;
