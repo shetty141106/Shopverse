@@ -13,26 +13,37 @@ import java.util.ArrayList;
 public class CartService {
 
     private final ProductRepository productRepository;
-    private final CartRepository repo;
+
     private final CartRepository cartRepository;
 
-    public CartService(CartRepository repo, ProductRepository productRepository, CartRepository cartRepository) {
-        this.repo = repo;
-        this.productRepository = productRepository;
+    public CartService(CartRepository cartRepository, ProductRepository productRepository) {
         this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
     }
     public CartItem addToCart(CartItem item) {
 
-        Product product = productRepository.findById(item.getProduct().getId())
+        Long userId = item.getUser().getId();
+        Long productId = item.getProduct().getId();
+
+        // 🔥 check if already exists
+        CartItem existing = cartRepository.findByUserIdAndProductId(userId, productId);
+
+        if (existing != null) {
+            // ✅ update quantity
+            existing.setQuantity(existing.getQuantity() + item.getQuantity());
+            return cartRepository.save(existing);
+        }
+
+        // ✅ new item
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         item.setProduct(product);
-
         return cartRepository.save(item);
     }
     public List<CartResponse> getUserCart(Long userId) {
 
-        List<CartItem> items = repo.findByUserId(userId);
+        List<CartItem> items = cartRepository.findByUserId(userId);
 
         List<CartResponse> response = new ArrayList<>();
 
@@ -59,7 +70,7 @@ public class CartService {
     }
 
     public void removeItem(Long id) {
-        repo.deleteById(id);
+        cartRepository.deleteById(id);
     }
 
 }

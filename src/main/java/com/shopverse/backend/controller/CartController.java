@@ -79,7 +79,8 @@ public class CartController {
         item.setProduct(product);
         item.setQuantity(req.getQuantity());
 
-        return cartRepository.save(item);
+// 🔥 USE SERVICE (IMPORTANT)
+        return service.addToCart(item);
     }
 
     // GET USER CART
