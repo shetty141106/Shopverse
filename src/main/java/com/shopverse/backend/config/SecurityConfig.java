@@ -22,10 +22,17 @@ public class SecurityConfig {
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
 
-        config.addAllowedOriginPattern("*");
+        // ✅ ALLOW YOUR FRONTEND (Live Server + Netlify)
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5500",
+                "http://127.0.0.1:5500",
+                "https://shopverse14.netlify.app"
+        ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
+
+        // ✅ IMPORTANT
         config.setAllowCredentials(true);
 
         org.springframework.web.cors.UrlBasedCorsConfigurationSource source =

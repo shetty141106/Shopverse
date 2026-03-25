@@ -40,13 +40,13 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = req.getRequestURI();
 
 // ✅ allow public routes
-        if (path.startsWith("/api/auth") ||
-                path.startsWith("/api/products"))  {     // optional but recommended
+        if (path.equals("/api/auth/login") ||
+                path.equals("/api/auth/register") ||
+                path.startsWith("/api/products")) {
 
             chain.doFilter(req, res);
             return;
         }
-
 // ✅ allow OPTIONS (CORS)
         if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
             chain.doFilter(req, res);
