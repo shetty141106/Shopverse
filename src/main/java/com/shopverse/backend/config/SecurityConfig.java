@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/orders/count").permitAll()
+                        .requestMatchers("/api/products/**").permitAll()
 
                         // cart requires login
                         .requestMatchers("/api/cart/**").authenticated()
