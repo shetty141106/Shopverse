@@ -127,32 +127,31 @@ async function loadProducts(keyword = "") {
             container.innerHTML = "No products found";
             return;
         }
+products.forEach(p => {
 
-        products.forEach(p => {
+    const safeImage = p.imageUrl || "https://via.placeholder.com/150";
+    const safeName = p.name || "No Name";
 
-            const safeImage = p.image || "";
-            const safeName = p.name || "No Name";
+    const card = document.createElement('div');
+    card.className = 'card';
 
-            const card = document.createElement('div');
-            card.className = 'card';
+    card.innerHTML = `
+        <img src="${safeImage}" 
+             onerror="this.src='https://via.placeholder.com/150'">
+        <h3>${safeName}</h3>
+        <p>₹${p.price}</p>
+        <button onclick="addToCart(${p.id}); event.stopPropagation();">
+            Add to Cart
+        </button>
+    `;
 
-            card.innerHTML = `
-                <img src="https://shopverseultra.onrender.com/uploads/${safeImage}" 
-                     onerror="this.src='https://via.placeholder.com/150'">
-                <h3>${safeName}</h3>
-                <p>₹${p.price}</p>
-                <button onclick="addToCart(${p.id}); event.stopPropagation();">
-                    Add to Cart
-                </button>
-            `;
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+        window.location.href = `product.html?id=${p.id}`;
+    });
 
-            card.style.cursor = 'pointer';
-            card.addEventListener('click', () => {
-                window.location.href = `product.html?id=${p.id}`;
-            });
-
-            container.appendChild(card);
-        });
+    container.appendChild(card);
+});
 
     } catch (err) {
         console.error("Error:", err);
@@ -181,7 +180,7 @@ async function loadProductDetails() {
         document.getElementById("product-desc").innerText = product.description || "No description";
 
         document.getElementById("product-image").src =
-            `https://shopverseultra.onrender.com/uploads/${product.image}`;
+    product.imageUrl || "https://via.placeholder.com/200";
 
         document.getElementById("add-to-cart-btn").onclick = function() {
             addToCart(product.id);
@@ -233,10 +232,10 @@ const products = await res.json();
 
     products.forEach(p => {
         const row = document.createElement('tr');
-        const safeImage = escapeHtml(p.image);
+        const safeImage = p.imageUrl || "https://via.placeholder.com/50";
         const safeName = escapeHtml(p.name);
         row.innerHTML = `
-        <td><img src="https://shopverseultra.onrender.com/uploads/${safeImage}" width="50" alt="product"></td>
+        <td><img src="${safeImage}" width="50" alt="product"></td>
         <td>${safeName}</td>
         <td>₹${p.price}</td>
         <td><button onclick="editProduct(${p.id}, '${safeName}', ${p.price})">Edit</button></td>
@@ -334,7 +333,7 @@ if (res.status === 403) {
     });
 }
 async function deleteProduct(id){
-    await authFetch(`${API_URL}/${id}`, { method: "DELETE" });
+    await authFetch(`${API_URL}/products/${id}`, { method: "DELETE" });
     loadAdminProducts();
 }
 
@@ -379,49 +378,50 @@ async function loadAdminStats() {
     }
 }
 async function addProduct() {
-    try {
-        const name = document.querySelector("#product-name").value;
-        const price = document.querySelector("#product-price").value;
-        const fileInput = document.querySelector("#product-image");
+    const name = document.querySelector("#product-name").value;
+    const price = document.querySelector("#product-price").value;
+    const file = document.querySelector("#product-image").files[0];
 
+    if (!name || !price || !file) {
+        alert("All fields required!");
+        return;
+    }
 
-        if (!name || !price || !fileInput.files[0]) {
-            alert("All fields required!");
-            return;
-        }
+    // 🔥 STEP 1: Upload to Cloudinary
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "shopverse_upload");
 
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("price", price);
-        formData.append("image", fileInput.files[0]);
+    const cloudRes = await fetch(
+        "https://api.cloudinary.com/v1_1/dc7udh4me/image/upload",
+        { method: "POST", body: data }
+    );
 
-        const token = localStorage.getItem("token");
+    const cloudData = await cloudRes.json();
 
-        const res = await fetch("https://shopverseultra.onrender.com/api/products", {
-            method: "POST",
-            headers: {
-                "Authorization": "Bearer " + token
-            },
-            body: formData
-        });
+    const imageUrl = cloudData.secure_url;
 
-        if (res.ok) {
-            alert("Product added successfully ✅");
+    // 🔥 STEP 2: Send to backend
+    const token = localStorage.getItem("token");
 
-            // reload products
-            loadAdminProducts();
+    const res = await fetch("https://shopverseultra.onrender.com/api/products", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({
+            name,
+            price,
+            imageUrl
+        })
+    });
 
-            // clear form
-            document.querySelector("#product-name").value = "";
-            document.querySelector("#product-price").value = "";
-            fileInput.value = "";
-
-        } else {
-            alert("Failed to add product ❌");
-        }
-
-    } catch (error) {
-        console.error("Add product error:", error);
+    if (res.ok) {
+        alert("Product added ✅");
+        loadAdminProducts();
+    } else {
+        alert("Failed ❌");
     }
 }
 async function updateQuantity(id, newQty, btn) {
@@ -491,7 +491,7 @@ function renderCartItems(items) {
         div.dataset.id = item.id;
 
         div.innerHTML = `
-            <img src="${item.image}" class="cart-img"/>
+          <img src="${item.imageUrl || 'https://via.placeholder.com/100'}" class="cart-img"/>
 
             <div class="cart-info">
                 <h3>${item.name}</h3>
@@ -568,7 +568,7 @@ function searchProducts() {
     loadProducts(keyword);
 }
 
-async function placeOrder(event){
+
    let orderInProgress = false;
 
 async function placeOrder(event){
@@ -608,7 +608,7 @@ async function placeOrder(event){
     orderInProgress = false;
     btn.disabled = false;
 }
-}
+
 async function loadCartFromBackend(){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return;
@@ -651,7 +651,7 @@ async function loadCartFromBackend(){
         div.dataset.id = item.id;
 
         div.innerHTML = `
-    <img src="https://shopverseultra.onrender.com/uploads/${item.image}" class="cart-img"/>
+    <img src="${item.imageUrl || 'https://via.placeholder.com/100'}" class="cart-img"/>
 
     <div class="cart-info">
         <h3>${item.name}</h3>

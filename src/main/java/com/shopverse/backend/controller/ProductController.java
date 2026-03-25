@@ -1,12 +1,9 @@
 package com.shopverse.backend.controller;
 
 import com.shopverse.backend.model.Product;
-import com.shopverse.backend.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.shopverse.backend.repository.ProductRepository;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.List;
 
 @RestController
@@ -14,65 +11,24 @@ import java.util.List;
 @CrossOrigin("*")
 public class ProductController {
 
-    private final ProductService service;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private ProductService productService;
-
-    public ProductController(ProductService service) {
-        this.service = service;
+    public ProductController(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
-    // ================= ADD PRODUCT =================
-    @PostMapping
-    public Product addProduct(
-            @RequestParam("name") String name,
-            @RequestParam("price") double price,
-            @RequestParam("image") MultipartFile file) throws Exception {
-
-        String uploadDir = System.getProperty("user.dir") + "/uploads/";
-
-        File dir = new File(uploadDir);
-        if (!dir.exists()) dir.mkdirs();
-
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-
-        File destination = new File(uploadDir + fileName);
-        file.transferTo(destination);
-
-        Product product = new Product();
-        product.setName(name);
-        product.setPrice(price);
-        product.setImage(fileName);
-
-        return service.addProduct(product);
-    }
-
-    // ================= GET ALL PRODUCTS =================
     @GetMapping
     public List<Product> getAllProducts() {
-        return service.getAllProducts();
-    }
-
-    // ================= DELETE =================
-    @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id) {
-        service.deleteProduct(id);
-    }
-
-    // ================= UPDATE =================
-    @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        product.setId(id);
-        return service.addProduct(product);
-    }
-    @GetMapping("/search")
-    public List<Product> searchProducts(@RequestParam(required = false) String keyword) {
-        return productService.searchProducts(keyword);
+        return productRepository.findAll();
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Long id) {
-        return productService.getProductById(id);
+    public Product getProduct(@PathVariable Long id) {
+        return productRepository.findById(id).orElseThrow();
+    }
+
+    @PostMapping
+    public Product addProduct(@RequestBody Product product) {
+        return productRepository.save(product);
     }
 }

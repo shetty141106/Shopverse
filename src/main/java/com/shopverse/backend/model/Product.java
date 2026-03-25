@@ -17,6 +17,6 @@ import lombok.*;
         private String category;
         private String name;
         private double price;
-        private String image;
+        private String imageUrl;
     }
 
