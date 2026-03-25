@@ -43,23 +43,20 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // allow OPTIONS (CORS fix)
+                        // CORS fix
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // public
+                        // public APIs
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/orders/count").permitAll()
-                        .requestMatchers("/api/products/**").permitAll()
 
-                        // cart requires login
+                        // protected
                         .requestMatchers("/api/cart/**").authenticated()
 
                         .anyRequest().authenticated()
                 )
 
-                // 🔥 THIS LINE WAS MISSING
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
