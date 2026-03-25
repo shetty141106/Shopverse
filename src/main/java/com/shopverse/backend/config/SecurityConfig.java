@@ -50,15 +50,14 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // CORS fix
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // public APIs
+                        // 🔥 IMPORTANT BOTH
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/orders/count").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
 
-                        // protected
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+
                         .requestMatchers("/api/cart/**").authenticated()
 
                         .anyRequest().authenticated()
