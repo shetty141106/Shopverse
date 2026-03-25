@@ -49,16 +49,10 @@ public class SecurityConfig {
                 .cors(cors -> {})
 
                 .authorizeHttpRequests(auth -> auth
-
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // 🔥 IMPORTANT BOTH
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-
+                        .requestMatchers("/api/auth/**").permitAll()   // ✅ VERY IMPORTANT
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-
-                        .requestMatchers("/api/cart/**").authenticated()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         .anyRequest().authenticated()
                 )
