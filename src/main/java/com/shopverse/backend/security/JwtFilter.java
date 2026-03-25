@@ -41,10 +41,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
 // ✅ allow public routes
         // ✅ Allow public endpoints FIRST
-        if (path.contains("/api/auth/login") ||
-                path.contains("/api/auth/register") ||
-                path.startsWith("/api/products")) {
-
+        // ✅ CORRECT FIX
+        if (path.startsWith("/api/auth") || path.startsWith("/api/products")) {
             chain.doFilter(req, res);
             return;
         }
