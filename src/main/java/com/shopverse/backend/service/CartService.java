@@ -28,25 +28,17 @@ public class CartService {
         Long userId = item.getUser().getId();
         Long productId = item.getProduct().getId();
 
-        // ✅ SAFE OPTIONAL FIX
         CartItem existing = cartRepository
                 .findByUserIdAndProductId(userId, productId)
                 .orElse(null);
 
         if (existing != null) {
-            // 🔥 UPDATE QUANTITY
             existing.setQuantity(existing.getQuantity() + item.getQuantity());
             return cartRepository.save(existing);
         }
 
-        // ✅ NEW ITEM
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        item.setProduct(product);
         return cartRepository.save(item);
     }
-
     // 🔥 GET USER CART
     public List<CartResponse> getUserCart(Long userId) {
 
