@@ -11,14 +11,14 @@ public class CartItem {
     private Long id;
 
     // 🔥 RELATION WITH USER
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // 🔥 RELATION WITH PRODUCT
-    @ManyToOne
-    @JoinColumn(name = "product_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
 
     private int quantity;
 
