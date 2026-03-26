@@ -6,45 +6,51 @@ import com.shopverse.backend.model.Product;
 import com.shopverse.backend.repository.CartRepository;
 import com.shopverse.backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.ArrayList;
 
 @Service
 public class CartService {
 
+    private final CartRepository cartRepository;
     private final ProductRepository productRepository;
 
-    private final CartRepository cartRepository;
-
-    public CartService(CartRepository cartRepository, ProductRepository productRepository) {
+    public CartService(CartRepository cartRepository,
+                       ProductRepository productRepository) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
     }
+
+    // 🔥 ADD TO CART (FINAL FIX)
     public CartItem addToCart(CartItem item) {
 
         Long userId = item.getUser().getId();
         Long productId = item.getProduct().getId();
 
-        // 🔥 check if already exists
-        CartItem existing = cartRepository.findByUserIdAndProductId(userId, productId);
+        // ✅ SAFE OPTIONAL FIX
+        CartItem existing = cartRepository
+                .findByUserIdAndProductId(userId, productId)
+                .orElse(null);
 
         if (existing != null) {
-            // ✅ update quantity
+            // 🔥 UPDATE QUANTITY
             existing.setQuantity(existing.getQuantity() + item.getQuantity());
             return cartRepository.save(existing);
         }
 
-        // ✅ new item
+        // ✅ NEW ITEM
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         item.setProduct(product);
         return cartRepository.save(item);
     }
+
+    // 🔥 GET USER CART
     public List<CartResponse> getUserCart(Long userId) {
 
         List<CartItem> items = cartRepository.findByUserId(userId);
-
         List<CartResponse> response = new ArrayList<>();
 
         for (CartItem item : items) {
@@ -69,8 +75,8 @@ public class CartService {
         return response;
     }
 
+    // 🔥 REMOVE ITEM
     public void removeItem(Long id) {
         cartRepository.deleteById(id);
     }
-
 }

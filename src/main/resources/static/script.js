@@ -129,15 +129,17 @@ async function loadProducts(keyword = "") {
         }
 products.forEach(p => {
 
-    const safeImage = p.imageUrl || "https://via.placeholder.com/150";
+    const safeImage = p.imageUrl && p.imageUrl.startsWith("http")
+    ? p.imageUrl
+    : "https://res.cloudinary.com/dc7udh4me/image/upload/v1/sample.jpg";
     const safeName = p.name || "No Name";
 
     const card = document.createElement('div');
     card.className = 'card';
 
     card.innerHTML = `
-        <img src="${safeImage}" 
-             onerror="this.src='https://via.placeholder.com/150'">
+       <img src="${safeImage}" 
+     onerror="this.src='https://res.cloudinary.com/dc7udh4me/image/upload/v1/sample.jpg'">
         <h3>${safeName}</h3>
         <p>₹${p.price}</p>
         <button onclick="addToCart(${p.id}); event.stopPropagation();">
@@ -178,9 +180,10 @@ async function loadProductDetails() {
         document.getElementById("product-name").innerText = product.name;
         document.getElementById("product-price").innerText = "₹" + product.price;
         document.getElementById("product-desc").innerText = product.description || "No description";
-
-        document.getElementById("product-image").src =
-    product.imageUrl || "https://via.placeholder.com/200";
+document.getElementById("product-image").src =
+    product.imageUrl && product.imageUrl.startsWith("http")
+        ? product.imageUrl
+        : "https://res.cloudinary.com/dc7udh4me/image/upload/v1/sample.jpg";
 
         document.getElementById("add-to-cart-btn").onclick = function() {
             addToCart(product.id);
@@ -491,7 +494,10 @@ function renderCartItems(items) {
         div.dataset.id = item.id;
 
         div.innerHTML = `
-          <img src="${item.imageUrl || 'https://via.placeholder.com/100'}" class="cart-img"/>
+          <img src="${item.image && item.image.startsWith('http') 
+    ? item.image 
+    : 'https://res.cloudinary.com/dc7udh4me/image/upload/v1/sample.jpg'}"
+    onerror="this.src='https://res.cloudinary.com/dc7udh4me/image/upload/v1/sample.jpg'"> class="cart-img"/>
 
             <div class="cart-info">
                 <h3>${item.name}</h3>
@@ -533,36 +539,38 @@ function showToast(msg) {
 }
 // ================= CART =================
 async function addToCart(productId){
+
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return alert("Login first");
 
-    // 🔥 get existing cart
-    const res = await authFetch(`${API_URL}/cart/user/${user.id}`);
-    const items = await res.json();
-
-    const existing = items.find(i => i.productId === productId);
-
-    if(existing){
-        // ✅ update quantity
-        await authFetch(`${API_URL}/cart/update/${existing.id}`, {
-            method: "PUT",
-            body: JSON.stringify({
-                quantity: existing.quantity + 1
-            })
-        });
-    } else {
-        // ✅ add new item
-        await authFetch(`${API_URL}/cart/add`, {
-            method: "POST",
-            body: JSON.stringify({
-                productId: productId,
-                quantity: 1
-            })
-        });
-    }
+    // 🔥 just send request (backend handles duplicate)
+    await authFetch(`${API_URL}/cart/add`, {
+        method: "POST",
+        body: JSON.stringify({
+            productId: productId,
+            quantity: 1
+        })
+    });
 
     updateCartCount();
 }
+function checkLoginUI() {
+    const token = localStorage.getItem("token");
+
+    const loginBtn = document.querySelector("a[href='login.html']");
+
+    if(token){
+        if(loginBtn){
+            loginBtn.textContent = "Logout";
+            loginBtn.onclick = () => {
+                localStorage.clear();
+                window.location.reload();
+            };
+        }
+    }
+}
+
+  
 function searchProducts() {
     const keyword = document.getElementById("searchInput").value;
     loadProducts(keyword);
@@ -651,7 +659,10 @@ async function loadCartFromBackend(){
         div.dataset.id = item.id;
 
         div.innerHTML = `
-    <img src="${item.imageUrl || 'https://via.placeholder.com/100'}" class="cart-img"/>
+ <img src="${item.image && item.image.startsWith('http') 
+    ? item.image 
+    : 'https://res.cloudinary.com/dc7udh4me/image/upload/v1/sample.jpg'}"
+    onerror="this.src='https://res.cloudinary.com/dc7udh4me/image/upload/v1/sample.jpg'">
 
     <div class="cart-info">
         <h3>${item.name}</h3>
@@ -1139,3 +1150,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+checkLoginUI();
