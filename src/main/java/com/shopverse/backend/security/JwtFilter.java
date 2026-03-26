@@ -14,73 +14,44 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 import io.jsonwebtoken.Claims;
-@Component
-public class JwtFilter extends OncePerRequestFilter {
+@Override
+protected void doFilterInternal(HttpServletRequest req,
+                                HttpServletResponse res,
+                                FilterChain chain)
+        throws ServletException, IOException {
 
-    private final JwtUtil jwtUtil;
+    String path = req.getRequestURI();
 
-    public JwtFilter(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
-
-    public String extractRole(String token) {
-        return jwtUtil.extractRole(token);
-    }
-
-    public String extractUsername(String token) {
-        return jwtUtil.extractUsername(token);
-    }
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest req,
-                                    HttpServletResponse res,
-                                    FilterChain chain)
-            throws ServletException, IOException {
-
-        String path = req.getRequestURI();
-
-// ✅ allow public routes
-        // ✅ Allow public endpoints FIRST
-        // ✅ CORRECT FIX
-        if (path.startsWith("/api/auth") || path.startsWith("/api/products")) {
-            chain.doFilter(req, res);
-            return;
-        }
-// ✅ allow OPTIONS (CORS)
-        if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
-            chain.doFilter(req, res);
-            return;
-        }
-
-        String header = req.getHeader("Authorization");
-
-        if (header != null && header.startsWith("Bearer ")) {
-
-            String token = header.substring(7);
-
-            if (jwtUtil.validateToken(token)) {
-
-                String username = jwtUtil.extractUsername(token);
-                String role = jwtUtil.extractRole(token);
-
-                List<SimpleGrantedAuthority> authorities =
-                        List.of(new SimpleGrantedAuthority("ROLE_" + role));
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                authorities
-                        );
-
-                authentication.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(req)
-                );
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }
-
+    // 🔥 SKIP AUTH ENDPOINT COMPLETELY
+    if (path.startsWith("/api/auth")) {
         chain.doFilter(req, res);
+        return;
     }
+
+    if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
+        chain.doFilter(req, res);
+        return;
+    }
+
+    String header = req.getHeader("Authorization");
+
+    if (header != null && header.startsWith("Bearer ")) {
+        String token = header.substring(7);
+
+        if (jwtUtil.validateToken(token)) {
+
+            String username = jwtUtil.extractUsername(token);
+            String role = jwtUtil.extractRole(token);
+
+            var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
+            var auth = new UsernamePasswordAuthenticationToken(
+                    username, null, authorities
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+    }
+
+    chain.doFilter(req, res);
 }
