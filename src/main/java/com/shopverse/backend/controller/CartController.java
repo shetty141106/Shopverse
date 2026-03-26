@@ -64,11 +64,12 @@ public class CartController {
 
     // ADD TO CART
     @PostMapping("/add")
-    public CartItem addToCart(@RequestBody CartRequest req, Authentication auth) {
+    public CartItem addToCart(@RequestBody CartRequest req) {
 
-        String email = auth.getName();
+        System.out.println("USER ID: " + req.getUserId());
+        System.out.println("PRODUCT ID: " + req.getProductId());
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findById(req.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Product product = productRepository.findById(req.getProductId())
@@ -79,7 +80,6 @@ public class CartController {
         item.setProduct(product);
         item.setQuantity(req.getQuantity());
 
-// 🔥 USE SERVICE (IMPORTANT)
         return service.addToCart(item);
     }
 

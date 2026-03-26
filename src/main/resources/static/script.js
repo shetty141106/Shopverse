@@ -543,17 +543,36 @@ async function addToCart(productId){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return alert("Login first");
 
-    // 🔥 just send request (backend handles duplicate)
-    await authFetch(`${API_URL}/cart/add`, {
-        method: "POST",
-        body: JSON.stringify({
-            productId: productId,
-            quantity: 1
-        })
-    });
+    try {
+        const res = await authFetch(`${API_URL}/cart/add`, {
+            method: "POST",
+            body: JSON.stringify({
+                productId: productId,
+                quantity: 1
+            })
+        });
 
-    updateCartCount();
+        if(!res){
+            alert("Request failed");
+            return;
+        }
+
+        if(!res.ok){
+            const text = await res.text();
+            console.error("ERROR:", text);
+            alert("Cart error: " + text);
+            return;
+        }
+
+        alert("Added to cart ✅");
+        updateCartCount();
+
+    } catch(err){
+        console.error(err);
+        alert("Something went wrong");
+    }
 }
+
 function checkLoginUI() {
     const token = localStorage.getItem("token");
 
