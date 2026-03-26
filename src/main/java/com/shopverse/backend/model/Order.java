@@ -1,5 +1,6 @@
 package com.shopverse.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +25,8 @@ public class Order {
 
     private LocalDateTime createdAt;
 
+
+    @JsonIgnore   // 🔥 ADD THIS
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 
