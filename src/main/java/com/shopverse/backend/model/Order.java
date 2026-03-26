@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -12,6 +13,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+
+    @Column(name = "user_email")   // 🔥 VERY IMPORTANT
     private String userEmail;
     private double totalAmount;
 
