@@ -40,7 +40,7 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        order.setUserEmail(user.getEmail());   // ✅ ONLY THIS
+        order.setUserEmail(user.getEmail());    // ✅ ONLY THIS
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(OrderStatus.PLACED);
 
@@ -71,7 +71,6 @@ public class OrderService {
             item.setQuantity(cart.getQuantity());
             item.setOrder(order);
 
-            total += product.getPrice() * cart.getQuantity();
             orderItems.add(item);
         }
         if (orderItems.isEmpty()) {
