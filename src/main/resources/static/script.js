@@ -543,15 +543,17 @@ async function addToCart(productId){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return alert("Login first");
 
+    console.log("USER:", user); // debug
+
     try {
         const res = await authFetch(`${API_URL}/cart/add`, {
             method: "POST",
-            body: JSON.stringify({
-                productId: productId,
-                quantity: 1
-            })
+           body: JSON.stringify({
+           productId: productId,
+           quantity: 1
+    })
         });
-
+        console.log("PRODUCT ID:", productId);
         if(!res){
             alert("Request failed");
             return;

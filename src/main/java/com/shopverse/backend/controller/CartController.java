@@ -64,25 +64,15 @@ public class CartController {
 
     // ADD TO CART
     @PostMapping("/add")
-    public CartItem addToCart(@RequestBody CartRequest req) {
+    public CartItem addToCart(@RequestBody CartRequest req, Authentication auth) {
 
-        System.out.println("REQ USER ID: " + req.getUserId());
-        System.out.println("REQ PRODUCT ID: " + req.getProductId());
-        System.out.println("REQ QTY: " + req.getQuantity());
+        String email = auth.getName(); // ✅ get logged-in user
 
-        if(req.getUserId() == null){
-            throw new RuntimeException("USER ID NULL ❌");
-        }
-
-        if(req.getProductId() == null){
-            throw new RuntimeException("PRODUCT ID NULL ❌");
-        }
-
-        User user = userRepository.findById(req.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found ❌"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Product product = productRepository.findById(req.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found ❌"));
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
         CartItem item = new CartItem();
         item.setUser(user);
