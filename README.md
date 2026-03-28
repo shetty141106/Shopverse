@@ -139,7 +139,7 @@ ShopVerse/
 ### ▶️ Run Backend
 
 ```bash
-git clone https://github.com/yourusername/shopverse.git
+git clone https://github.com/shetty141106/Shopverse
 cd backend
 mvn clean install
 mvn spring-boot:run
