@@ -81,51 +81,52 @@ Frontend (Netlify) → API Calls → Backend (Render) → Database (MySQL)
 
 # 📂 Project Structure
 
+```
 ShopVerse/
 │
 ├── backend/
-│ ├── src/
-│ │ ├── main/
-│ │ │ ├── java/com/shopverse/backend/
-│ │ │ │ ├── config/
-│ │ │ │ ├── controller/
-│ │ │ │ ├── dto/
-│ │ │ │ ├── model/
-│ │ │ │ ├── repository/
-│ │ │ │ ├── security/
-│ │ │ │ ├── service/
-│ │ │ │ └── Application.java
-│ │ │
-│ │ │ ├── resources/
-│ │ │ │ ├── application.properties
-│ │ │ │ └── templates/
-│ │ │
-│ │ │ └── test/
-│ │
-│ │ └── pom.xml
-│ │
-│ ├── Dockerfile
-│ ├── docker-compose.yml
-│ └── .gitignore
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/shopverse/backend/
+│   │   │   │   ├── config/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── dto/
+│   │   │   │   ├── model/
+│   │   │   │   ├── repository/
+│   │   │   │   ├── security/
+│   │   │   │   ├── service/
+│   │   │   │   └── Application.java
+│   │   │
+│   │   │   ├── resources/
+│   │   │   │   ├── application.properties
+│   │   │   │   └── templates/
+│   │   │
+│   │   │   └── test/
+│   │
+│   │   └── pom.xml
+│   │
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   └── .gitignore
 │
 ├── frontend/
-│ ├── images/
-│ ├── index.html
-│ ├── login.html
-│ ├── register.html
-│ ├── shop.html
-│ ├── product.html
-│ ├── cart.html
-│ ├── checkout.html
-│ ├── orders.html
-│ ├── user.html
-│ ├── admin.html
-│ ├── success.html
-│ ├── script.js
-│ └── style.css
+│   ├── images/
+│   ├── index.html
+│   ├── login.html
+│   ├── register.html
+│   ├── shop.html
+│   ├── product.html
+│   ├── cart.html
+│   ├── checkout.html
+│   ├── orders.html
+│   ├── user.html
+│   ├── admin.html
+│   ├── success.html
+│   ├── script.js
+│   └── style.css
 │
 └── README.md
----
+```
 
 ## ⚙️ Setup Instructions
 
@@ -220,7 +221,7 @@ spring.jpa.hibernate.ddl-auto=update
 # 👥 Team & Contributors
 
 ### 👨‍💻 Project Lead
-**Mokshith Shetty**  
+- Mokshith Shetty
 - Backend Development (Spring Boot, APIs, Security)  
 - System Design & Architecture  
 - Deployment (Render, Netlify)  
@@ -228,7 +229,7 @@ spring.jpa.hibernate.ddl-auto=update
 ---
 
 ### 🤝 Contributor
-**Varun Nalge**  
+- Varun Nalge
 - Frontend Development (HTML, CSS, JavaScript)  
 - UI Design & Page Development  
 
