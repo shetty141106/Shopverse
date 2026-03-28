@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Checkout | Shopverse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+<div class="logo">
+<a href="index.html">Shopverse</a>
+</div>
+
+<ul class="nav-links">
+<li><a href="index.html">Store</a></li>
+<li><a href="shop.html">Products</a></li>
+<li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+</ul>
+</nav>
+
+<section class="checkout-section">
+
+<h1>Checkout</h1>
+
+<div class="checkout-container">
+
+  <!-- LEFT: FORM -->
+  <form class="checkout-form" onsubmit="fakePayment(event)">
+
+    <h3>Shipping Details</h3>
+
+    <input type="text" id="checkout-fullname" placeholder="Full Name" required>
+    <input type="email" id="checkout-email" placeholder="Email Address" required>
+    <input type="text" id="checkout-address" placeholder="Shipping Address" required>
+
+    <div class="row">
+      <input type="text" id="checkout-city" placeholder="City" required>
+      <input type="text" id="checkout-postal" placeholder="Postal Code" required>
+    </div>
+
+    <button class="btn btn-primary checkout-btn">Place Order</button>
+
+  </form>
+
+  <!-- RIGHT: SUMMARY -->
+  <div class="checkout-summary">
+
+    <h3>Order Summary</h3>
+
+    <div id="checkout-items-preview"></div>
+
+    <div class="summary-total">
+      <h2>Total: ₹<span id="checkout-total">0</span></h2>
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+<footer>
+<p>© 2026 Shopverse. All rights reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  loadCheckout();
+</script>
+
+</body>
+</html>

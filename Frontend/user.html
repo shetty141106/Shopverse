@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo">
+        <a href="index.html">Shopverse</a>
+    </div>
+
+    <ul class="nav-links">
+        <li><a href="index.html">Store</a></li>
+        <li><a href="shop.html">Products</a></li>
+        <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+
+        <li id="admin-link"></li>
+        <li id="auth-link"><a href="login.html">Login</a></li>
+    </ul>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <h1>Welcome, <span id="user-name"></span> 👋</h1>
+        <p>Manage your account & shopping easily</p>
+    </div>
+
+    <!-- GRID -->
+    <div class="dashboard-grid">
+
+        <!-- PROFILE -->
+        <div class="card profile">
+            <img id="user-avatar">
+            <h3 id="user-name-2"></h3>
+            <p id="user-email"></p>
+            <p><b>Role:</b> <span id="user-role"></span></p>
+        </div>
+
+        <!-- CART -->
+        <div class="card">
+            <h3>🛒 Cart Items</h3>
+            <div class="stat" id="cart-count-box">0</div>
+            <a href="cart.html"><div class="btn">View Cart</div></a>
+        </div>
+
+        <div class="card" onclick="goToOrders()" style="cursor:pointer;">
+            <h3>📦 Orders</h3>
+            <div class="stat" id="order-count">0</div>
+            <p id="order-text">Loading...</p>
+        </div>
+
+        <!-- SHOP -->
+        <div class="card">
+            <h3>🛍️ Explore Products</h3>
+            <p>Discover new items</p>
+            <a href="shop.html"><div class="btn">Shop Now</div></a>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+
+<script>
+    loadCartCountBox();
+    loadOrdersSummary();
+</script>
+
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if(user){
+        document.getElementById("user-name").innerText = user.name;
+        document.getElementById("user-name-2").innerText = user.name;
+        document.getElementById("user-email").innerText = user.email;
+        document.getElementById("user-role").innerText = user.role;
+
+        // 🔥 ADD THIS (THIS IS THE FIX)
+        const avatar = document.getElementById("user-avatar");
+
+        avatar.src = `https://ui-avatars.com/api/?name=${user.name}&background=ffcc00&color=000&size=128`;
+        
+    }
+
+
+
+</script>
+<script>
+    function checkUserAccess(){
+
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if(!user){
+            alert("Please login!");
+            window.location.href = "login.html";
+        }
+    }
+
+    checkUserAccess();
+</script>
+
+</body>
+</html>

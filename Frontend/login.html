@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | Shopverse</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+<div class="logo">
+<a href="index.html">Shopverse</a>
+</div>
+
+<ul class="nav-links">
+<li><a href="index.html">Store</a></li>
+<li><a href="shop.html">Products</a></li>
+<li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+    <li id="admin-link"></li>
+    <li id="auth-link"><a href="login.html">Login</a></li>
+</ul>
+</nav>
+
+<section class="login-section">
+
+<h1>Login</h1>
+
+<form class="login-form" onsubmit="loginUser(event)">
+
+<input type="email" id="login-email" placeholder="Email Address" required>
+
+<input type="password" id="login-password" placeholder="Password" required>
+
+<button class="btn btn-primary">Login</button>
+
+</form>
+
+<p>Don't have an account? <a href="register.html">Register</a></p>
+
+</section>
+
+<footer>
+<p>© 2026 Shopverse. All rights reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+
+
+
+</body>
+</html>

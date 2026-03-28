@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Shopverse</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b) !important;
+    color: white;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 40px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(12px);
+    color: white;
+}
+
+.nav-links a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+}
+
+/* HERO */
+.hero {
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    color: white;
+    text-align: center;
+    animation: fadeIn 1.5s ease;
+    min-height: 100vh;
+}
+
+.hero h1 {
+    font-size: 70px;
+    margin: 0;
+    letter-spacing: 2px;
+
+    display: inline-block;   /* 🔥 IMPORTANT FIX */
+
+    animation: slideUp 1s ease forwards;
+}
+
+.hero p {
+    margin: 15px 0;
+    font-size: 20px;
+    opacity: 0.8;
+}
+
+.hero button {
+    margin-top: 20px;
+    padding: 14px 30px;
+    border-radius: 30px;
+    border: none;
+    background: white;
+    color: black;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+}
+
+.hero button:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 25px rgba(255, 204, 0, 0.8);
+}
+
+/* FEATURES */
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 60px 20px;
+}
+
+.feature-card {
+    background: rgba(255,255,255,0.08);   /* 🔥 MATCH THEME */
+    backdrop-filter: blur(12px);
+
+    padding: 30px;
+    width: 250px;
+    border-radius: 20px;
+
+    text-align: center;
+    transition: 0.4s;
+
+    border: 1px solid rgba(255,255,255,0.1);
+    opacity: 0;
+    transform: translateY(40px);
+    transition: 0.6s ease;
+}
+
+.feature-card.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.feature-card h3 {
+    color: white;
+}
+
+.feature-card p {
+    color: #cbd5e1;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  border-color: #ffcc00;
+}
+
+/* CTA */
+.cta {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.cta button {
+    padding: 15px 35px;
+    border-radius: 30px;
+    border: none;
+    background: black;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+@keyframes slideFade {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero h1 {
+  animation: slideFade 0.8s ease forwards;
+}
+
+.hero p {
+  opacity: 0;
+  animation: slideFade 1s ease forwards;
+  animation-delay: 0.3s;
+}
+
+.hero button {
+  opacity: 0;
+  animation: slideFade 1s ease forwards;
+  animation-delay: 0.6s;
+}
+
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="logo">Shopverse</div>
+    <div class="nav-links">
+        <a href="index.html">Store</a>
+        <a href="shop.html">Products</a>
+        <a href="cart.html">Cart</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <h1>SHOPVERSE</h1>
+    <p>Where Convenience Meets Intelligent Shopping</p>
+    <button onclick="window.location.href='shop.html'">Explore Now</button>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+    <div class="feature-card">
+        <h3>⚡ Fast Shopping</h3>
+        <p>Lightning fast experience with smooth UI</p>
+    </div>
+
+    <div class="feature-card">
+        <h3>🔒 Secure</h3>
+        <p>JWT protected secure transactions</p>
+    </div>
+
+    <div class="feature-card">
+        <h3>📦 Smart Orders</h3>
+        <p>Track and manage your orders easily</p>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <h2>Start Shopping Today</h2>
+    <button onclick="window.location.href='shop.html'">Go to Store</button>
+</section>
+
+<script>
+const cards = document.querySelectorAll('.feature-card');
+
+window.addEventListener('scroll', () => {
+    const trigger = window.innerHeight * 0.85;
+
+    cards.forEach(card => {
+        const top = card.getBoundingClientRect().top;
+
+        if(top < trigger){
+            card.classList.add("show");
+        }
+    });
+});
+
+// trigger once on load
+window.dispatchEvent(new Event('scroll'));
+</script>
+
+</body>
+</html>
