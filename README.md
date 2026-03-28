@@ -124,8 +124,7 @@ ShopVerse/
 │ ├── script.js
 │ └── style.css
 │
-
- 
+└── README.md
 ---
 
 ## ⚙️ Setup Instructions
@@ -218,11 +217,26 @@ spring.jpa.hibernate.ddl-auto=update
 
 ---
 
-# 👨‍💻 AUTHOR
+# 👥 Team & Contributors
 
+### 👨‍💻 Project Lead
 **Mokshith Shetty**  
-Computer Engineering Student  
-Aspiring Full Stack Developer 🚀  
+- Backend Development (Spring Boot, APIs, Security)  
+- System Design & Architecture  
+- Deployment (Render, Netlify)  
+
+---
+
+### 🤝 Contributor
+**Varun Nalge**  
+- Frontend Development (HTML, CSS, JavaScript)  
+- UI Design & Page Development  
+
+---
+
+## 🙌 Acknowledgement
+
+Special thanks to **Varun Nalge** for his valuable contribution in building the frontend and improving the overall user experience.
 
 ---
 
