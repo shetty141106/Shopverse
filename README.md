@@ -79,37 +79,53 @@ Frontend (Netlify) → API Calls → Backend (Render) → Database (MySQL)
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
+
 ShopVerse/
 │
 ├── backend/
-│ ├── src/main/java/com/shopverse/backend/
-│ │ ├── config/
-│ │ ├── controller/
-│ │ ├── dto/
-│ │ ├── model/
-│ │ ├── repository/
-│ │ ├── security/
-│ │ ├── service/
-│ │ └── Application.java
+│ ├── src/
+│ │ ├── main/
+│ │ │ ├── java/com/shopverse/backend/
+│ │ │ │ ├── config/
+│ │ │ │ ├── controller/
+│ │ │ │ ├── dto/
+│ │ │ │ ├── model/
+│ │ │ │ ├── repository/
+│ │ │ │ ├── security/
+│ │ │ │ ├── service/
+│ │ │ │ └── Application.java
+│ │ │
+│ │ │ ├── resources/
+│ │ │ │ ├── application.properties
+│ │ │ │ └── templates/
+│ │ │
+│ │ │ └── test/
 │ │
-│ ├── src/main/resources/
-│ │ ├── application.properties
-│ │ ├── static/
-│ │ └── templates/
+│ │ └── pom.xml
 │ │
-│ └── pom.xml
+│ ├── Dockerfile
+│ ├── docker-compose.yml
+│ └── .gitignore
 │
 ├── frontend/
+│ ├── images/
 │ ├── index.html
 │ ├── login.html
 │ ├── register.html
+│ ├── shop.html
+│ ├── product.html
 │ ├── cart.html
-│ ├── js/
-│ └── css/
+│ ├── checkout.html
+│ ├── orders.html
+│ ├── user.html
+│ ├── admin.html
+│ ├── success.html
+│ ├── script.js
+│ └── style.css
 │
-└── README.md
 
+ 
 ---
 
 ## ⚙️ Setup Instructions
