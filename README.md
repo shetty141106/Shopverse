@@ -10,7 +10,7 @@
 ## 🚀 Live Demo
 
 - 🌐 Frontend (Netlify): https://shopverse14.netlify.app/  
-- ⚙️ Backend (Render): https://shopverseultra.onrender.com
+- ⚙️ Backend (Render): https://shopverse-4-vrl5.onrender.com
 
 ---
 

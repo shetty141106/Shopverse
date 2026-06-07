@@ -1,4 +1,4 @@
-const API_URL = "https://shopverseultra.onrender.com/api";
+const API_URL = "https://shopverse-4-vrl5.onrender.com/api";
 const path = window.location.pathname;
 
 // ================= UTILITY FUNCTIONS =================
@@ -93,7 +93,7 @@ async function loadProducts(keyword = "") {
 
     container.innerHTML = "Loading products...";
 
-    let url = "https://shopverseultra.onrender.com/api/products";
+    let url = "https://shopverse-4-vrl5.onrender.com/api/products";
 
     try {
         console.log("Fetching:", url);
@@ -169,7 +169,7 @@ async function loadProductDetails() {
     if (!id) return;
 
     try {
-        const res = await fetch(`https://shopverseultra.onrender.com/api/products/${id}`);
+        const res = await fetch(`https://shopverse-4-vrl5.onrender.com/api/products/${id}`);
         if (!res.ok) {
             console.error("API failed:", res.status);
             return;
@@ -306,7 +306,7 @@ async function updateStatus(orderId){
 
     const status = document.getElementById(`status-${orderId}`).value;
 
-    const res = await authFetch(`https://shopverseultra.onrender.com/api/admin/orders/${orderId}/status`,
+    const res = await authFetch(`https://shopverse-4-vrl5.onrender.com/api/admin/orders/${orderId}/status`,
         {
             method: "PUT",
             body: JSON.stringify({ status })
@@ -435,7 +435,7 @@ async function addProduct() {
     // 🔥 STEP 2: Send to backend
     const token = localStorage.getItem("token");
 
-    const res = await fetch("https://shopverseultra.onrender.com/api/products", {
+    const res = await fetch("https://shopverse-4-vrl5.onrender.com/api/products", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -474,7 +474,7 @@ async function updateQuantity(id, newQty, btn) {
     animateQty(qtyElement);
 
     try {
-        await authFetch(`https://shopverseultra.onrender.com/api/cart/update/${id}`, {  // ✅ FIX
+        await authFetch(`https://shopverse-4-vrl5.onrender.com/api/cart/update/${id}`, {  // ✅ FIX
             method: "PUT",
             body: JSON.stringify({ quantity: newQty })
         });
@@ -494,7 +494,7 @@ async function updateQuantity(id, newQty, btn) {
 }
 async function removeItem(id, itemDiv){
     try{
-        await authFetch(`https://shopverseultra.onrender.com/api/cart/${id}`, {
+        await authFetch(`https://shopverse-4-vrl5.onrender.com/api/cart/${id}`, {
             method: "DELETE"
         });
 
@@ -718,7 +718,7 @@ async function loadCheckout(){
     }
 
     try {
-        const res = await authFetch(`https://shopverseultra.onrender.com/api/cart/user/${user.id}`);
+        const res = await authFetch(`https://shopverse-4-vrl5.onrender.com/api/cart/user/${user.id}`);
         if (!res || !res.ok) throw new Error("Failed to load cart");
         
         const items = await res.json();
@@ -753,7 +753,7 @@ async function updateCartCount(){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return;
 
-    const res = await authFetch(`https://shopverseultra.onrender.com/api/cart/user/${user.id}`);
+    const res = await authFetch(`https://shopverse-4-vrl5.onrender.com/api/cart/user/${user.id}`);
     if (!res.ok) {
         console.error("Cart count failed:", res.status);
         return;
@@ -772,7 +772,7 @@ async function loadCartCountBox(){
     const user = JSON.parse(localStorage.getItem("user"));
     if(!user) return;
 
-    const res = await authFetch(`https://shopverseultra.onrender.com/api/cart/user/${user.id}`);
+    const res = await authFetch(`https://shopverse-4-vrl5.onrender.com/api/cart/user/${user.id}`);
     const items = await res.json();
 
     let count = 0;
@@ -908,7 +908,7 @@ function loginUser(event) {
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
 
-      fetch("https://shopverseultra.onrender.com/api/auth/login", {
+      fetch("https://shopverse-4-vrl5.onrender.com/api/auth/login", {
     method: "POST",
     headers: {
         "Content-Type": "application/json"   // 🔥 MUST HAVE
@@ -953,7 +953,7 @@ async function loadOrdersSummary(){
 
     try {
         const res = await authFetch(
-            `https://shopverseultra.onrender.com/api/orders/${encodeURIComponent(user.email)}`
+            `https://shopverse-4-vrl5.onrender.com/api/orders/${encodeURIComponent(user.email)}`
         );
 
         if(!res.ok){
