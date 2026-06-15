@@ -223,7 +223,7 @@ spring.jpa.hibernate.ddl-auto=update
 ### 👨‍💻 Project Lead
 - Mokshith Shetty
 - Backend Development (Spring Boot, APIs, Security)  
-- System Design & Architecture  
+-  Architecture  
 - Deployment (Render, Netlify)  
 
 ---
@@ -237,7 +237,7 @@ spring.jpa.hibernate.ddl-auto=update
 
 ## 🙌 Acknowledgement
 
-Special thanks to **Varun Nalge** for his valuable contribution in building the frontend and improving the overall user experience.
+Special thanks to Varun Nalge for his valuable contribution in building the frontend and improving the overall user experience.
 
 ---
 
