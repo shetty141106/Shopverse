@@ -137,16 +137,14 @@ ShopVerse/
 
 ### ▶️ Run Backend
 
-git clone https://github.com/shetty141106/Shopverse
-cd backend
-mvn clean install
-mvn spring-boot:run
-spring.datasource.url=jdbc:mysql://localhost:3306/shopverse
-spring.datasource.username=root
-spring.datasource.password=yourpassword
-
-spring.jpa.hibernate.ddl-auto=update
-
+- git clone https://github.com/shetty141106/Shopverse
+- cd backend
+- mvn clean install
+- mvn spring-boot:run
+- spring.datasource.url=jdbc:mysql://localhost:3306/shopverse
+- spring.datasource.username=root
+- spring.datasource.password=yourpassword
+- spring.jpa.hibernate.ddl-auto=update
 ---
 
 # 🌐 FRONTEND SETUP
