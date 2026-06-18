@@ -137,7 +137,6 @@ ShopVerse/
 
 ### ▶️ Run Backend
 
-```bash
 git clone https://github.com/shetty141106/Shopverse
 cd backend
 mvn clean install
@@ -216,6 +215,8 @@ spring.jpa.hibernate.ddl-auto=update
 - 🛠️ Debugging real-world problems  
 
 ---
+
+
 
 
 
