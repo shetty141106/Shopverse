@@ -2,7 +2,6 @@
 
 <p align="center">
   <b>A modern full-stack e-commerce platform built with Spring Boot & JavaScript</b><br/>
-  Secure • Scalable • Production Ready 🚀
 </p>
 
 ---
@@ -218,14 +217,5 @@ spring.jpa.hibernate.ddl-auto=update
 
 ---
 
-# 👥 Team & Contributors
-
-### 👨‍💻 Project Lead
-- Mokshith Shetty
-- Backend Development (Spring Boot, APIs, Security)  
--  Architecture  
-- Deployment (Render, Netlify)  
-
----
 
 
