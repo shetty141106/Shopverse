@@ -228,27 +228,4 @@ spring.jpa.hibernate.ddl-auto=update
 
 ---
 
-### 🤝 Contributor
-- Varun Nalge
-- Frontend Development (HTML, CSS, JavaScript)  
-- UI Design & Page Development  
 
----
-
-## 🙌 Acknowledgement
-
-Special thanks to Varun Nalge for his valuable contribution in building the frontend and improving the overall user experience.
-
----
-
-# ⭐ SHOW YOUR SUPPORT
-
-If you like this project, please give it a ⭐ on GitHub!
-
----
-
-# 📄 LICENSE
-
-This project is for educational purposes.
-
----
