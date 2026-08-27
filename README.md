@@ -8,7 +8,7 @@
 
 ## 🚀 Live Demo
 
-- 🌐 Frontend (Netlify): https://shopverse14.netlify.app/  
+- 🌐 Frontend (Netlify): shopverse14.vercel.app/  
 - ⚙️ Backend (Render): https://shopverse-4-vrl5.onrender.com
 
 ---
