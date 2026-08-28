@@ -23,7 +23,7 @@ It follows a **modern microservice-like architecture** where frontend and backen
 
 ## 🏗️ Architecture
 
-Frontend (Netlify) → API Calls → Backend (Render) → Database (MySQL)
+Frontend (Vercel) → API Calls → Backend (Render) → Database (MySQL)
 
 ---
 
@@ -73,7 +73,7 @@ Frontend (Netlify) → API Calls → Backend (Render) → Database (MySQL)
 - Cloudinary
 
 ### Deployment
-- Frontend → Netlify  
+- Frontend → Vercel
 - Backend → Render  
 
 ---
